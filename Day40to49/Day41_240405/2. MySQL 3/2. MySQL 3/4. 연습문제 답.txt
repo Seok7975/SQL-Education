@@ -1,0 +1,66 @@
+USE HAKSA_DATABASE;
+4-1. 사용자 ID를 "sky", 암호(PASSWORD) "sky1234"로 생성하시오.
+create user sky identified by 'sky1234';
+
+4-2. 사용자 "sky"의 암호를 "sky5678"로 변경하시오.
+alter user sky identified with mysql_native_password by 'sky5678';
+(alter user 'sky' identified with mysql_native_password by 'sky5678';)
+4-3. 사용자 "SKY"에게 모든 데이터베이스를 관리할 수 있는 모든 권한을 부여하시오.
+grant all privileges on *. * to sky;
+4-4. 다음과 같은 학생신상테이블(SINSANG)이 있다. 
+학번 : 정수, 
+이름 : 영수치 10자리, 
+출생년도 : 영수치 4자리, 
+성별 : 영수치 1자리, 
+도시명 : 영수치 10자리, 
+입학일자 : 날짜형, 
+우편번호 : 영수치 7자리, 
+전화번호 : 영수치 14자리
+이고 PRIMARY KEY는 학번이다.
+
+(1) 학생신상테이블을 생성하시오. // 삭제 : drop table sinsang
+create table sinsang
+(
+stu_no int,
+stu_name varchar(10),
+birth_year char(4),
+sex char(1),
+city varchar(10),
+ent_date date,
+postcode char(7),
+phone char(14),
+primary key (stu_no)
+);
+
+또는
+create table sinsang
+(
+stu_no int primary key,
+stu_name varchar(10),
+birth_year char(4),
+sex char(1),
+city varchar(10),
+ent_date date,
+postcode char(7),
+phone char(14)
+);
+(2) 학생신상 테이블(SINSANG)로 부터 도시명이 "서울"인 학생의 학번(stu_no), 
+이름(stu_name), 성별(sex)을 학번 순으로 출력하는 SQL문을 쓰시오.
+select stu_no, stu_name, sex from sinsang where city='서울' order by stu_no asc;
+(4) 학생신상 테이블(sinsang)로 부터 우편번호(postcode)가 '546-121'인 모든 학생의 우편번호를 
+'540-100'으로 변경하는 SQL문을 쓰시오.
+update sinsang set postcode ='540-100' where postcode = '546-121';
+(6) 학생신상 테이블의 형식에 맞추어 본인의 데이터를 생성하여 보시오.(INSERT 명령문 사용)
+insert into sinsang values(1, '홍길동', '1980', 'm', '한산도', now(), '546-121', '015');
+
+select * from sinsang;
+
+참고
+현재 사용자 확인
+select user();
+
+현재 선택 중인 Database 확인
+select database();
+
+화면 지우기
+system cls

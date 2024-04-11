@@ -1,0 +1,282 @@
+12. 
+참고
+Optional 클래스
+코드를 작성하고 실행하다 보면 NullPointerException 예외를 접할 수 있다. 따라서 이에 대한 처리를 고려하고 코드를 작성해야 하는데, 이는 어렵지는 않지만 매우 번거로운 일이다. 그래서 이러한 일을 단순히 처리할 수 있도록 자바 8에서 Optional 클래스가 소개되었다.
+
+public final class Optional<T> extends Object{
+	private final T value;		// 이 참조변수를 통해 저장을 한다.
+	...
+}
+
+Optional은 멤버 value에 인스턴스를 저장하는 일종의 래퍼(Wrapper) 클래스이다.
+
+Optional 인스턴스의 생성 방법 두 가지
+
+Optional<String> os1 = Optional.of(new String("Toy"));
+	-> String 인스턴스를 저장한 Optional 인스턴스 생성, of 메소드 호출
+Optional<String> os2 = Optional.ofNullable(new String("Toy2"));
+	-> String 인스턴스를 저장한 Optional 인스턴스 생성, ofNullable 메소드 호출
+
+두 메소드 of와 ofNullable의 차이점은 null의 허용 여부에 있다. ofNullable의 인자로는 null을 전달할 수 있다. 즉 비어 있는 Optional 인스턴스를 생성할 수 있다. 반면 of 메소드에는 null을 인자로 전달할 수 없다. null을 전달할 경우 NullPointerException이 발생한다. 그리고 Optional 인스턴스를 대상으로 다음과 같이 내용물의 존재 여부를 확인할 수 있고, 또 해당 내용물을 꺼낼 수도 있다.
+
+if(os1.isPresent())	// 내용물 존재하면 isPresent는 true 반환
+	System.out.println(os1.get());		// get을 통한 내용물 반환
+
+13. Optional 클래스를 이용해 "Toy1"과 "Toy2"를 각각 저장하고 그것을 람다식과 메소드 참조로 각각 출력해 보자.
+
+14. Optional 클래스를 이용하여  "Optional String"을 감싸고 있는 인스턴스를 만든다. "Optional String"을 감싸고 있는 Optional 인스턴스를 "OPTIONAL STRING"을 저장하는 인스턴스로 만든다. 그리고 그것을 반환받아 출력한다.
+"Optional String"을 감싸고 있는 Optional 인스턴스를 공백을 '_' 로 바꾸고, "optional string" 소문자로 바꾼다. 그리고 그것을 반환받아 출력한다.
+
+15. 저장하고 있는 내용물이 없는, 빈 Optional 인스턴스를 생성한다. "So Basic"이라는 문자열을 감싼 Optional 인스턴스를 생성한다.
+String s1에 빈 Optional 인스턴스가 가진 값을 반환하는 데, 그 값이 비어 있으면 "Empty"를 반환하자.
+String s2에 "So Basic"이라는 문자열을 감싼 Optional 인스턴스가 가진 값을 반환하는데, 그 값이 비어 있으면 "Empty"를 반환한다.
+그리고 s1과 s2를 각각 출력하자.
+
+
+16. 다음을 Optional 클래스 기반으로 개선해보자.
+
+class ContInfo {
+    String phone;   // null 일 수 있음
+    String adrs;    // null 일 수 있음
+
+    public ContInfo(String ph, String ad) {
+        phone = ph;
+        adrs = ad;
+    }
+
+    public String getPhone() { return phone; }
+    public String getAdrs() { return adrs; }
+
+}
+
+class IfElseOptional {
+    public static void main(String[] args) {
+        ContInfo ci = new ContInfo(null, "Republic of Korea");
+        
+        String phone;
+        String addr;
+
+        if(ci.phone != null)
+            phone = ci.getPhone();
+        else
+            phone = "There is no phone number.";
+
+        if(ci.adrs != null)
+            addr = ci.getAdrs();
+        else
+            addr = "There is no address.";
+          
+        System.out.println(phone);
+        System.out.println(addr);
+    }
+}
+
+17. 다음 예제를 Optional을 이용하여 개선해 보자.
+
+class Friend {
+    String name;
+    Company cmp;    // null 일 수 있음
+
+    public Friend(String n, Company c) {
+        name = n;
+        cmp = c;
+    }
+
+    public String getName() { return name; }
+    public Company getCmp() { return cmp; }
+}
+
+class Company {
+    String cName;
+    ContInfo cInfo;    // null 일 수 있음
+
+    public Company(String cn, ContInfo ci) {
+        cName = cn;
+        cInfo = ci;
+    }
+
+    public String getCName() { return cName; }
+    public ContInfo getCInfo() { return cInfo; }
+
+}
+
+class ContInfo {
+    String phone;   // null 일 수 있음
+    String adrs;    // null 일 수 있음
+
+    public ContInfo(String ph, String ad) {
+        phone = ph;
+        adrs = ad;
+    }
+
+    public String getPhone() { return phone; }
+    public String getAdrs() { return adrs; }
+
+}
+
+class NullPointerCaseStudy {
+    public static void showCompAddr(Friend f) {
+        String addr = null;
+    
+        if(f != null) {
+            Company com = f.getCmp();
+            
+            if(com != null) {
+                ContInfo info = com.getCInfo();
+                
+                if(info != null)
+                    addr = info.getAdrs();   
+            }
+        }
+        
+        if(addr != null)
+            System.out.println(addr);
+        else
+            System.out.println("There's no address information.");
+    }
+
+    public static void main(String[] args) {
+
+        ContInfo ci = new ContInfo("321-444-577", "Republic of Korea");
+        Company cp = new Company("YaHo Co., Ltd.", ci);
+        Friend frn = new Friend("LEE SU", cp);
+
+        // 친구 정보에서 회사 주소를 출력
+        showCompAddr(frn);
+    }
+}
+
+18. "Optional String"을 감싸고 있는 Optional 인스턴스를 생성한다.
+위의 인스턴스를 map을 이용하여, "Optional String"을 소문자로 바꾼 후, Optional 인스턴스를 생성한다.
+그리고  그 값을 반환하여 출력하자.
+"Optional String"을 감싸고 있는 Optional 인스턴스를 flatMap을 이용하여, "Optional String"을 소문자로 바꾼 후, Optional 인스턴스를 생성한다.
+그리고 그 값을 반환하여 출력한다.
+
+19. 다음의 빈 곳을 flatMap을 이용하여 채워보자. 
+만약 Optional<String> phone 이 null 이면 String phone에 "There is no phone number"가 저장되게 하자.
+만약 Optional<String> adrs 이 null 이면 String phone에 "There is no address"가 저장되게 하자.
+
+import java.util.Optional;
+
+class ContInfo {
+    Optional<String> phone;   // null 일 수 있음
+    Optional<String> adrs;    // null 일 수 있음
+
+    public ContInfo(Optional<String> ph, Optional<String> ad) {
+        phone = ph;
+        adrs = ad;
+    }
+    public Optional<String> getPhone() { return phone; }
+    public Optional<String> getAdrs() { return adrs; }
+}
+
+class FlatMapElseOptional {
+    public static void main(String[] args) {
+        Optional<ContInfo> ci = Optional.of(
+            new ContInfo(Optional.ofNullable(null), Optional.of("Republic of Korea"))
+        );
+        
+        String phone = ;
+
+        String addr = ;
+          
+        System.out.println(phone);
+        System.out.println(addr);
+    }
+}
+
+20. 다음 소스 코드를 전반에 걸쳐서 Opional 클래스를 적용해 보자.
+
+class Friend {
+    String name;
+    Company cmp;    // null 일 수 있음
+
+    public Friend(String n, Company c) {
+        name = n;
+        cmp = c;
+    }
+
+    public String getName() { return name; }
+    public Company getCmp() { return cmp; }
+}
+
+class Company {
+    String cName;
+    ContInfo cInfo;    // null 일 수 있음
+
+    public Company(String cn, ContInfo ci) {
+        cName = cn;
+        cInfo = ci;
+    }
+
+    public String getCName() { return cName; }
+    public ContInfo getCInfo() { return cInfo; }
+
+}
+
+class ContInfo {
+    String phone;   // null 일 수 있음
+    String adrs;    // null 일 수 있음
+
+    public ContInfo(String ph, String ad) {
+        phone = ph;
+        adrs = ad;
+    }
+
+    public String getPhone() { return phone; }
+    public String getAdrs() { return adrs; }
+
+}
+
+class NullPointerCaseStudy {
+    public static void showCompAddr(Friend f) {
+        String addr = null;
+    
+        if(f != null) {
+            Company com = f.getCmp();
+            
+            if(com != null) {
+                ContInfo info = com.getCInfo();
+                
+                if(info != null)
+                    addr = info.getAdrs();   
+            }
+        }
+        
+        if(addr != null)
+            System.out.println(addr);
+        else
+            System.out.println("There's no address information.");
+    }
+
+    public static void main(String[] args) {
+
+        ContInfo ci = new ContInfo("321-444-577", "Republic of Korea");
+        Company cp = new Company("YaHo Co., Ltd.", ci);
+        Friend frn = new Friend("LEE SU", cp);
+
+        // 친구 정보에서 회사 주소를 출력
+        showCompAddr(frn);
+    }
+}
+
+21. 다음 소스코드를 OptionalInt를 이용하여 바꿔보자.
+
+import java.util.Optional;
+
+class OptionalBase {
+    public static void main(String[] args) {
+        Optional<Integer> oi1 = Optional.of(3);
+        Optional<Integer> oi2 = Optional.empty();
+        
+        System.out.print("[Step 1.] : ");
+        oi1.ifPresent(i -> System.out.print(i + "\t"));
+        oi2.ifPresent(i -> System.out.print(i));
+        System.out.println();
+
+        System.out.print("[Step 2.] : ");
+        System.out.print(oi1.orElse(100) + "\t");
+        System.out.print(oi2.orElse(100) + "\t");
+        System.out.println();
+    }
+}
