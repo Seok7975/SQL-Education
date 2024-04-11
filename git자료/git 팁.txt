@@ -1,0 +1,96 @@
+깃 설치후 할것
+1. git init
+2. git clone (git주소) or git remote add (git주소)
+
+
+깃 유저 및 이메일 등록
+1. 유저 등록 방법 : git config --global user.name "이름 넣기"
+2. 이메일 등록 방법 : git config --global user.email "email"
+* 처음 git 쓰게 되면 이메일 등록시 아마도 로그인 창이 뜨는데 로그인 하면 됨
+
+
+다른 브런치 연결 하는 법
+1.  git pull origin <branch명>
+2.  git branch --set-upstream-to=origin/<branch명> master -> 만약 main이면 master 대신 main으로 쓰기
+3.  git pull origin <branch명> --allow-unrelated-histories
+
+
+- 다른 브런치에서 pull 하기 : git pull origin <branch명>
+- 다른 브런치로 이동하기 : git checkout <branch명>
+
+커밋 메시지 수정하기
+
+- https://data-study-clip.tistory.com/237 
+
+
+Updates were rejected because a pushed branch tip is behind its remote counterpart. 오류가 날때
+
+- https://donggu1105.tistory.com/21
+
+
+
+
+github default 브랜치 명 변경 방법
+:https://www.lesstif.com/gitbook/github-default-master-main-100205686.html
+
+
+서로 관련이 없는 두 프로젝트를 병합할때 오류 해결 방법
+:https://somjang.tistory.com/entry/Git-fatal-refusing-to-merge-unrelated-histories-%ED%95%B4%EA%B2%B0-%EB%B0%A9%EB%B2%95
+
+
+
+
+- git bash로 브랜치 생성 방법 -
+
+1. 깃 설치 후 할것,사용자 등록을 한다
+
+2. 만약 gitbash가 master인데 github가 main인 경우 git branch -m master main으로 바꿔준다 (반대도 마찬가지)
+   *fatal: Not a valid object name 오류가 뜬 경우는 commit을 한 번도 안 해서 뜨므로 
+   대충 새로운 브런치에 올릴 파일을 add 한 후에 commit -m을 하자
+
+3. git branch "새로운 브런치 이름"
+
+4. git checkout "새로운 브런치 이름" 해서 브런치를 변경 해준다 (브런치가 생성 됐는지 확인 할려면 git branch)
+
+5. 이미 git commit -m 한 파일이 있으므로 이 상태에서 git push를 해준다
+    * git push --set-upstream origin 하라는 내용이 나오면 그대로 해준다
+
+
+https://velog.io/@hyeongjun/Git-GitHub-Repository%EC%97%90-push-%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95-%ED%8C%8C%EC%9D%BC-%EC%98%AC%EB%A6%AC%EA%B8%B0
+
+
+-------------------------------------------------------------------------------------------
+-git bash에서 주소(레포지토리) 주소 바꾸는 법-
+1. git remote -v : 주소 무엇으로 넣어져 있는지 체크
+
+2. git remote set-url origin 바꿀주소
+
+if) 🚫 Remote origin already exists 
+에러기존의 repository가 연결된 상태에서 add를 하면 발생하는 에러이다.
+
+2-2-1. git remote remove  : remove로 기존 연결을 끊고 
+git remote add origin https://github.com/user/repo1.git
+
+2-2-2. git remote add 추가할주소 : 새로 추가하는 방법
+
+cf)
+https://cheershennah.tistory.com/217
+---------------------------------------------------------------------------------------------
+https://theheydaze.tistory.com/236
+
+
+---------------------------------------------------------------------------------------------
+-폴더 삭제하기-
+1. 로컬 디렉토리와 git 저장소에서 모두 삭제
+git rm -rf 폴더명
+git commit -m "delete folder"
+
+2. 로컬 디렉토리의 폴더는 유지한 채 git 저장소에서만 폴더 삭제
+이클립스와 git을 연동하여 commit & push 하던 중 
+bin 폴더와 src 폴더를 모두 commit & push를 해서 bin 폴더는 git 저장소에서 
+삭제하고자 한다.
+git rm --cached -r bin/
+git commit -m "delete folder"
+---------------------------------------------------------------------------------------------
+-현재 위치에 clone하기-
+git clone {url} 
