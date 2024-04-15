@@ -1,0 +1,11 @@
+create table sample200(no int);
+insert into sample200 values(1);
+insert into sample200 values(2);
+insert into sample200 values(3);
+insert into sample200 values(4);
+insert into sample200 values(5);
+insert into sample200 values(6);
+insert into sample200 values(7);
+select * from sample200 where no between 3 and 5;
+select * from sample200 where no >=3 and no <=5;
+

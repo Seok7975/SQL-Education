@@ -1,0 +1,185 @@
+CREATE TABLE 메이커2(
+메이커코드 CHAR(4) NOT NULL,
+메이커명 VARCHAR(30),
+PRIMARY KEY(메이커코드)
+);
+
+CREATE TABLE 상품22(
+상품코드 CHAR(4) NOT NULL,
+상품명 varchar(30),
+메이커코드 CHAR(4),
+FOREIGN KEY(메이커코드) REFERENCES 메이커2(메이커코드)
+);
+
+INSERT INTO 메이커2 VALUES('M001', '나이키');
+INSERT INTO 메이커2 VALUES('M002', '리복');
+
+INSERT INTO 상품22 VALUES('P001', '축구화', 'M001');
+INSERT INTO 상품22 VALUES('P002', '러닝화', 'M002');
+INSERT INTO 상품22 VALUES('P003', '농구화', 'M003');	# Error
+
+SELECT * FROM 메이커2;
+SELECT * FROM 상품22;
+
+DELETE FROM 메이커2 WHERE 메이커코드='M001';	# Error
+UPDATE 메이커2 SET 메이커코드='M003' WHERE 메이커코드='M002';	# Error
+
+DROP TABLE 메이커2, 상품22;
+
+#######################################################################
+
+CREATE TABLE 메이커2(
+메이커코드 CHAR(4) NOT NULL,
+메이커명 VARCHAR(30),
+PRIMARY KEY(메이커코드)
+);
+
+CREATE TABLE 상품22(
+상품코드 CHAR(4) NOT NULL,
+상품명 varchar(30),
+메이커코드 CHAR(4),
+FOREIGN KEY(메이커코드) REFERENCES 메이커2(메이커코드) ON DELETE CASCADE
+);
+# ON DELETE CASCADE
+# 외래 키에서 참조하는 키가 포함된 행을 삭제하려고 하면 해당 외래 키가 포함되어 있는 모든 행도 삭제
+
+INSERT INTO 메이커2 VALUES('M001', '나이키');
+INSERT INTO 메이커2 VALUES('M002', '리복');
+
+INSERT INTO 상품22 VALUES('P001', '축구화', 'M001');
+INSERT INTO 상품22 VALUES('P002', '러닝화', 'M002');
+
+SELECT * FROM 메이커2;
+SELECT * FROM 상품22;
+DELETE FROM 메이커2 WHERE 메이커코드='M001';
+SELECT * FROM 메이커2;
+SELECT * FROM 상품22;
+
+UPDATE 메이커2 SET 메이커코드='M003' WHERE 메이커코드='M002';	# Error
+# 에러가 발생하는 이유는 외래 키 제약 조건 때문
+# "메이커2" 테이블에서 "M002" 코드를 참조하는 "상품22" 테이블의 레코드가 존재하기 때문에 "M002" 코드를 변경불가
+# 외래 키 제약 조건은 데이터 무결성을 유지하기 위해 참조 무결성을 강제합니다.
+# 즉, 외래 키가 참조하는 행이 삭제되거나 변경되지 않도록 보장한다
+
+DROP TABLE 메이커2, 상품22;
+############################################################
+
+CREATE TABLE 메이커2(
+메이커코드 CHAR(4) NOT NULL,
+메이커명 VARCHAR(30),
+PRIMARY KEY(메이커코드)
+);
+
+CREATE TABLE 상품22(
+상품코드 CHAR(4) NOT NULL,
+상품명 varchar(30),
+메이커코드 CHAR(4),
+FOREIGN KEY(메이커코드) REFERENCES 메이커2(메이커코드) ON UPDATE CASCADE
+);
+
+# ON UPDATE CASCADE
+# 외래 키에서 참조하는 키 값이 포함된 행에서 키 값을 업데이트 하면 해당 외래 키를 구성하는 모든 값도 키에 지정된 새 값으로 업데이트되도록 지정
+
+INSERT INTO 메이커2 VALUES('M001', '나이키');
+INSERT INTO 메이커2 VALUES('M002', '리복');
+
+INSERT INTO 상품22 VALUES('P001', '축구화', 'M001');
+INSERT INTO 상품22 VALUES('P002', '러닝화', 'M002');
+
+SELECT * FROM 메이커2;
+SELECT * FROM 상품22;
+UPDATE 메이커2 SET 메이커코드='M003' WHERE 메이커코드='M002';
+
+SELECT * FROM 메이커2;
+SELECT * FROM 상품22;
+
+DELETE FROM 메이커2 WHERE 메이커코드='M001';	# Error
+
+DROP TABLE 메이커2, 상품22;
+#####################################################################
+
+CREATE TABLE 메이커2(
+메이커코드 CHAR(4) NOT NULL,
+메이커명 VARCHAR(30),
+PRIMARY KEY(메이커코드)
+);
+
+CREATE TABLE 상품22(
+상품코드 CHAR(4) NOT NULL,
+상품명 varchar(30),
+메이커코드 CHAR(4),
+FOREIGN KEY(메이커코드) REFERENCES 메이커2(메이커코드) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+INSERT INTO 메이커2 VALUES('M001', '나이키');
+INSERT INTO 메이커2 VALUES('M002', '리복');
+
+INSERT INTO 상품22 VALUES('P001', '축구화', 'M001');
+INSERT INTO 상품22 VALUES('P002', '러닝화', 'M002');
+
+SELECT * FROM 메이커2;
+SELECT * FROM 상품22;
+UPDATE 메이커2 SET 메이커코드='M003' WHERE 메이커코드='M002';
+
+SELECT * FROM 메이커2;
+SELECT * FROM 상품22;
+
+DELETE FROM 메이커2 WHERE 메이커코드='M001';	
+SELECT * FROM 메이커2;
+SELECT * FROM 상품22;
+
+DROP TABLE 메이커2, 상품22;
+################################################################
+
+CREATE TABLE 메이커2(
+메이커코드 CHAR(4) NOT NULL,
+메이커명 VARCHAR(30),
+PRIMARY KEY(메이커코드)
+);
+
+CREATE TABLE 상품22(
+상품코드 CHAR(4) NOT NULL,
+상품명 varchar(30),
+메이커코드 CHAR(4)
+);
+
+INSERT INTO 메이커2 VALUES('M001', '나이키');
+INSERT INTO 메이커2 VALUES('M002', '리복');
+
+INSERT INTO 상품22 VALUES('P001', '축구화', 'M001');
+INSERT INTO 상품22 VALUES('P002', '러닝화', 'M002');
+
+ALTER TABLE 상품22 ADD CONSTRAINT FOREIGN KEY(메이커코드) REFERENCES 메이커2(메이커코드) ON DELETE CASCADE ON UPDATE CASCADE;
+
+SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_NAME = '상품22';
+ALTER TABLE 상품22 DROP FOREIGN KEY 상품22_IBFK_1;	# 상품22_IBFK_1은 검색해서 나온 제약키 이름;
+
+DROP TABLE 메이커2, 상품22;
+
+
+##########################################################################
+
+CREATE TABLE 메이커2(
+메이커코드 CHAR(4) NOT NULL,
+메이커명 VARCHAR(30),
+PRIMARY KEY(메이커코드)
+);
+
+CREATE TABLE 상품22(
+상품코드 CHAR(4) NOT NULL,
+상품명 varchar(30),
+메이커코드 CHAR(4)
+);
+
+INSERT INTO 메이커2 VALUES('M001', '나이키');
+INSERT INTO 메이커2 VALUES('M002', '리복');
+
+INSERT INTO 상품22 VALUES('P001', '축구화', 'M001');
+INSERT INTO 상품22 VALUES('P002', '러닝화', 'M002');
+
+ALTER TABLE 상품22 ADD CONSTRAINT 상품22_메이커코드_fk FOREIGN KEY(메이커코드) REFERENCES 메이커2(메이커코드) ON DELETE CASCADE ON UPDATE CASCADE;
+# 제약 조건 이름 :  작명법 테이블이름_컬럼이름_제약조건
+SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_NAME = '상품22';
+ALTER TABLE 상품22 DROP FOREIGN KEY 상품22_메이커코드_fk;	# 상품22_메이커코드_fk 은 검색해서 나온 제약키 이름;
+
+DROP TABLE 메이커2, 상품22;

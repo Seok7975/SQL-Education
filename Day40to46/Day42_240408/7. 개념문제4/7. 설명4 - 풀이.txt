@@ -1,0 +1,368 @@
+SYNTAX DELETE명령
+DELETE FROM 테이블명 WHERE 조건식
+
+DELETE FROM sample41; 으로 DELETE 명령을 실행하면 sample41 테이블의 모든 데이터가 삭제된다.
+
+SYNTAX UPDATE 명령
+UPDATE 테이블명 SET 열1 = 값1, 열2 = 값2, ... WHERE 조건식
+
+CREATE TABLE sample41(
+no int,
+a varchar(10),
+b date
+);
+
+insert into sample41 values(1, "ABC", "2014-01-25");
+insert into sample41 (no, a) values(2, "XYZ");
+
+SELECT * FROM sample41;
+
+값이 NULL인 것을 검색할려면 
+SELECT * FROM sample41 WHERE b IS NULL;
+
+컬럼 b의 값이 NULL인 것을 모두 '2014-09-07'로 변경할려면
+UPDATE sample41 SET b = '2014-09-07' WHERE b IS NULL;
+
+SELECT * FROM sample41;
+
+UPDATE 명령에서는 WHERE 조건에 일치하는 '모든 행'이 갱신된다!
+WHERE 조건을 생략하면 모든 행이 갱신된다.
+
+UPDATE sample41 SET no = no + 1;
+
+모든 행의 번호에 1을 더한다.
+SELECT * FROM sample41;
+
+복수열 갱신
+
+두 구문으로 나누어 UPDATE 명령 실행
+UPDATE sample41 SET a = 'xxx' WHERE no = 2;
+UPDATE sample41 SET b = '2014-01-01' WHERE no = 2;
+
+하나로 묶어서 UPDATE 명령 실행
+UPDATE sample41 SET a = 'xxx', b = '2014-01-01' WHERE no = 2;
+
+UPDATE sample41 SET no = no + 1, a = no;  	# ①
+UPDATE sample41 SET a = no, no = no + 1;	# ②
+
+위에서 ①, ② 를 실행해보기 전에
+데이터를 출력해 보자.
+SELECT * FROM sample41;
+
+MySQL
+
+UPDATE sample41 SET no = no + 1, a = no;	# ①
+SELECT * FROM sample41;
+
+출력 결과
+no	a	b
+3	3	2014-01-01
+4	4	2014-09-07
+
+UPDATE sample41 SET a = no, no = no + 1;	# ②
+SELECT * FROM sample41;
+
+출력 결과
+no	a	b
+4	3	2014-01-01
+5	4	2014-09-07
+
+이 두 UPDATE 명령은 콤마(,)로 구분된 갱신 식의 순서가 서로 다르다. 
+그리고 이들 UPDATE 명령을 각각 실행한 결과가 서로 다르게 나온다.
+
+사실은 데이터베이스 제품에 따라 그 처리 방식이 달라진다. 
+다시 말해 데이터베이스 제품에 따라 결과가 달라지는 것이다. 
+예를 들어 MySQL에서는 서로 다른 결괏값이 나오지만 
+Oracle에서는 어느 명령을 실행해도 결과는 같다.
+
+Oracle
+이번에는 Oracle에서 UPDATE 명령을 실행한 결과를 살펴보자. 
+이때 테이블 데이터는 MySQL에서 UPDATE 명령을 실행하기 전과 동일한 상태라고 가정하면.
+
+UPDATE sample41 SET no = no + 1, a = no;	# ①
+SELECT * FROM sample41;
+
+출력 결과
+no	a	b
+3	2	2014-01-01
+4	3	2014-09-07
+
+UPDATE sample41 SET a = no, no = no + 1;	# ②
+SELECT * FROM sample41;
+
+출력 결과
+no	a	b
+4	3	2014-01-01
+5	4	2014-09-07
+
+MySQL에서는 ①을 실행했을 때 no 열과 a 열의 값은 같아진다. 
+하지만 ②를 실행하면 no 열과 a 열의 값은 서로 달라진다. 
+한편 Oracle에서는 ①을 실행해도 ②를 실행해도 a열의 값은 'no-1'상태를 유지한다.
+
+즉, Oracle에서는 SET 구에 기술한 식의 순서가 처리에 영향을 주지 않는다는 것을 알 수 있다. 
+갱신식의 오른쪽에 위치한 no 열의 값이 항상 갱신 이전의 값을 반환하기 때문이다. 
+한편 MySQL에서는 SET 구에 기술된 순서로 갱신처리가 일어나므로 
+no 열의 값은 갱신 이전의 값이 아닌 갱신된 이후의 값을 반환한다. 
+따라서 MySQL의 경우, 갱신식 안에서 열을 참조할 때는 처리 순서를 고려할 필요가 있다.
+
+NULL로 갱신하기
+
+UPDATE sample41 SET a = NULL;
+SELECT * FROM sample41;
+
+다만 NOT NULL 제약이 설정되어 있는 열은 NULL이 허용되지 않는다.
+
+물리삭제와 논리삭제 
+// 물리삭제 -> 실제 삭제, 저장공간 확보 : delete
+// 논리삭제 -> 실제로는 삭제를 안했는데 삭제한척, 저장공간 확보X, 검색 느림 : 
+
+CREATE TABLE sample42
+(
+no int AUTO_INCREMENT PRIMARY KEY,
+a varchar(10),
+flag int default 0	# default 0 : 값을 입력하지 않으면 0으로 저장
+);
+
+INSERT INTO sample42(a) values('ABC');	# 1, ABC, 0
+INSERT INTO sample42(a) values('XYZ');	# 2, XYZ, 0
+INSERT INTO sample42(a) values('GHI');	# 3, GHI, 0
+INSERT INTO sample42(a) values('JKL');		# 4, JKL, 0
+
+SELECT * FROM sample42;
+
+데이터베이스에서 데이터를 삭제할 때는 물리삭제와 논리삭제의 두 가지 방법을 고려할 수 있다. 
+물리삭제는 SQL의 DELETE 명령을 사용해 직접 데이터를 삭제하자는 사고 방식.
+논리삭제는, 테이블에 '삭제플래그'와 같은 열을 미리 준비해 둔다. 
+즉, 테이블에서 실제로 행을 삭제하는 대신, 
+UPDATE 명령을 이용해 '삭제플래그'의 값을 
+유효하게 갱신해두자는 발상에 의한 삭제 방법을 말한다. 
+실제 테이블 안에 데이터는 남아있지만, 참조할 때에는 '삭제플래그'가 
+삭제로 설정된 행을 제외하는 SELECT 명령을 실행한다. 
+결과적으로 해당 행이 삭제된 것처럼 보인다.
+
+논리삭제의 장점으로는 데이터를 삭제하지 않기 때문에 
+삭제되기 전의 상태로 간단히 되돌릴 수 있다는 것을 꼽을 수 있다. 
+한편 단점으로는 삭제해도 데이터베이스의 저장공간이 늘어나지 않는 점, 
+그리고 데이터베이스의 크기가 증가함에따라 검색속도가 떨어지는 점을 들 수 있다. 
+뿐만 아니라 애플리케이션 측 프로그램에서는 삭제임에도 불구하고 
+UPDATE 명령을 실행하므로 혼란을 야기하기도 한다.
+
+CREATE TABLE SAMPLE421(
+no INT AUTO_INCREMENT PRIMARY KEY,
+a DATETIME DEFAULT CURRENT_TIMESTAMP,
+b varchar(10)
+);
+
+INSERT INTO sample421(b) VALUES('HI');	# 1, now, HI
+INSERT INTO sample421(b) VALUES('GOOD');	# 2, now(), GOOD
+INSERT INTO sample421(b) VALUES('NICE');
+
+SELECT * FROM sample421;
+
+연습문제
+문제1 
+테이블에 행을 추가할 때 사용하는 SQL 명령은 무엇인가?
+① SELECT
+② INSERT
+③ DELETE
+
+답 : ②
+테이블에 행을 추가할 때는 INSERT 명령을 사용한다.
+
+문제2
+DELETE 명령에서 WHERE 구를 지정하지 않고 실행하는 경우, 테이블의 데이터는 어떻게 변화하나?
+① 에러가 발생한다.
+② 변하지 않는다.
+③ 모두 지워진다.
+
+답 : ③
+WHERE 구를 지정하지 않은 채 DELETE 명령을 실행하면 테이블의 모든 행이 삭제된다.
+
+문제3
+UPDATE 명령으로 갱신할 수 있는 것은 다음 중 무엇인가?
+① 셀
+② 행
+③ 제약
+
+답 : ①
+UPDATE 명령으로 셀을 갱신할 수 있다. 
+셀이 모여서 행이 되므로 행이 갱신된다고 생각할 수도 있지만 
+UPDATE 명령은 행의 셀을 갱신하는 명령이다.
+
+집계함수
+COUNT(집합)
+SUM(집합)
+AVG(집합)
+MIN(집합)
+MAX(집합)
+
+SQL은 데이터베이스라 불리는 '데이터 집합'을 다루는 언어이다. 
+이 같은 집합의 개수나 합계가 궁금하다면 
+SQL이 제공하는 집계함수를 사용하여 간단하게 구할 수 있다.
+
+COUNT로 행 개수 구하기
+
+SYNTAX COUNT
+COUNT(집합)
+
+CREATE TABLE sample51(no int, name char(3), quantity int);
+INSERT INTO sample51 VALUES(1, 'A', 1);
+INSERT INTO sample51 VALUES(2, 'A', 2);
+INSERT INTO sample51 VALUES(3, 'B', 10);
+INSERT INTO sample51 VALUES(4, 'C', 3);
+INSERT INTO sample51 VALUES(5, NULL, NULL);
+
+SELECT * FROM sample51;
+
+COUNT로 행 개수 계산
+SELECT COUNT(*) FROM sample51; 	# 5
+
+sample51에는 전부 다섯 개의 행이 있으며 COUNT의 결괏값도 5이다. 
+인수로 *가 지정되어 있는데 이는 SELECT 구에서 '모든 열'을 나타낼 때 사용하는 메타문자와 같다.
+
+집계함수의 특징은 복수의 값(집합)에서 하나의 값을 계산해내는 것이다. 
+일반적인 함수는 하나의 행에 대하여 하나의 값을 반환한다. 
+한편 집계함수는 집합으로부터 하나의 값을 반환한다. 
+이렇게 집합으로부터 하나의 값을 계산하는 것을 '집계'라 부른다. 
+이러한 이유로 집계함수를 SELECT 구에 쓰면 WHERE 구의 유무와 관계없이 
+결과값으로 하나의 행을 반환한다.
+
+SELECT * FROM sample51 WHERE name = 'A';
+SELECT COUNT(*) FROM sample51 WHERE name = 'A'; 	#2 (2개의 행)
+
+SELECT구는 WHERE 구보다 나중에 내부적으로 처리된다. 
+따라서 WHERE 구로 조건을 지정하면 테이블 전체가 아닌, 
+검색된 행이 COUNT로 넘겨진다. 즉, WHERE 구의 조건에 맞는 행의 개수를 구할 수 있다.
+
+집계함수와 NULL 값(무시)
+COUNT ㅡ 인수로 열명을 지정할 수 있다. 
+열명을 지정하면 그 열에 한해서 행의 개수를 구할 수 있다. 
+실제로 집계함수는 보통 그 같은 목적을 위해 많이 사용된다. 
+특히 *를 인수로 사용할 수 있는 것은 COUNT 함수뿐이다. 
+다른 집계함수에서는 열명이나 식을 인수로 지정한다.
+여기서 문제는 NULL 값을 어떻게 취급하느냐 하는 것이다. 
+SQL에서는 NULL 값을 고려해야 한다. 
+집계함수는 집합 안에 NULL 값이 있을 경우 이를 제외하고 처리한다.
+
+SELECT * FROM sample51;
+SELECT COUNT(no), COUNT(name) FROM sample51;
+
+집계함수는 집합 안에 NULL 값이 있을 경우 무시한다!
+
+DISTINCT로 중복 제거
+
+SQL의 SELECT 명령은 이러한 중복된 값을 제거하는 함수를 제공한다. 
+이 때 사용하는 키워드가 바로 DISTINCT 이다.
+
+SELECT ALL name FROM sample51;
+SELECT name FROM sample51;
+
+DISTINCT를 지정, 콤마는 붙이지 않는다.
+SELECT DISTINCT name FROM sample51;
+
+첫 번째 select 명령에서는 DISTINCT가 아닌 ALL을 지정했다. 
+이렇게 하면 중복 유무와 관계없이 문자 그대로 모든 행을 반환한다. 
+즉, SELECT 구에 지정하는 ALL 또는 DISTINCT는 중복된 값을 
+제거할 것인지 설정하는 스위치와 같은 역할을 한다. 
+이 때 ALL과 DISTINCT 중 어느 것도 지정하는 않은 경우에는 중복된 값은 제거되지 않는다. 
+즉, 생략할 경우에는 ALL로 간주된다.
+
+SELECT COUNT(ALL name), COUNT(DISTINCT name) FROM sample51;	# 4	3 	NULL을 제외한 값의 개수
+
+SUM으로 합계 구하기
+
+SELECT * FROM sample51;
+SELECT SUM(quantity) FROM sample51;
+
+SUM 집계함수에 지정되는 집합은 수치형 뿐이다. 
+문자열형이나 날짜시간형의 집합에서 합계를 구할 수 는 없다. 
+name 열은 문자열형이므로 SUM(name)과 같이 지정할 수는 없다. 
+한편, SUM 집계함수도 COUNT와 마찬가지로 NULL 값을 무시한다. 
+NULL 값을 제거한 뒤에 합계를 낸다.
+
+AVG로 평균값 구하기
+SELECT * FROM sample51;
+
+SELECT AVG(quantity), SUM(quantity) / COUNT(quantity) FROM sample51;
+# null 무시, 4로 나눔
+
+AVG 집계함수도 NULL 값은 무시한다. 
+즉, NULL 값을 제거한 뒤에 평균값을 계산한다. 
+만약 NULL을 0으로 간주해서 평균을 내고 싶다면 
+CASE를 사용해 NULL을 0으로 변환한 뒤에 AVG 함수로 계산하면 된다.
+
+SELECT AVG(CASE WHEN quantity IS NULL THEN 0 ELSE quantity END) AS avgnull0 FROM sample51;
+
+SELECT AVG(IFNULL(quantity, 0)) AS avgnull0 FROM sample51;
+
+* MIN, MAX로 최솟값, 최댓값 구하기
+
+MIN 집계함수, MAX 집계함수를 사용해 집합에서 최솟값과 최댓값을 구할 수 있다. 
+이들 함수는 문자열형과 날짜시간형에도 사용할 수 있다. 
+다만 NULL 값을 무시하는 기본규칙은 다른 집계함수와 같다.
+
+SELECT * FROM sample51;
+
+SELECT MIN(quantity), MAX(quantity), MIN(name), MAX(name) FROM sample51;
+
+* 그룹화 - GROUP BY
+
+SYNTAX GROUP BY
+SELECT * FROM 테이블명 GROUP BY 열1, 열2, ...
+
+SELECT * FROM sample51;
+SELECT name FROM sample51 GROUP BY name;
+SELECT DISTINCT name FROM sample51;
+
+DISTINCT를 지정했을 때와 같은 결과가 나왔다. 
+GROUP BY 구에 열을 지정하여 그룹화하면 지정된 열의 값이 같은 행이 하나의 그룹으로 묶인다.
+
+그럼, DISTINCT로 중복을 제거하는 것과 GROUP BY로 구룹화하는 것은 어떤 차이가 있을까? 
+실은 GROUP BY 구를 지정하는 경우에는 집계함수와 함께 사용하지 않으면 별 의미가 없다. 
+GROUP BY 구로 그룹화된 각각의 그룹이 하나의 집합으로서 집계함수의 인수로 넘겨지기 때문이다.
+
+GROUP BY 구와 집계함수를 조합
+SELECT name, COUNT(name), sum(quantity) FROM sample51 GROUP BY name;
+
+업무환경에서 GROUP BY를 사용하는 경우는 꽤 많다. 
+예를 들면 각 점포의 일별 매출 데이터가 중앙 판매 관리시스템에 전송되어 
+점포별 매출실적을 집계해 어떤 점포가 매출이 올라가는지, 
+어떤 상품이 인기가 있는지 등을 분석할 때 사용된다. 
+여기에서 점포별, 상품별, 월별, 일별 등 특정단위로 집계할 때 GROUP BY를 자주 사용한다. 
+매출실적을 조사하는 동시에 SUM 집계함수로 합계를 낼 수 있으며, 
+COUNT로 건수를 집계하는 경우도 있다.
+
+HAVING 구로 조건 지정
+WHERE 구에서는 집계함수를 사용할 수 없다!
+
+SELECT name, COUNT(name) FROM sample51 GROUP BY name;
+
+SELECT name, COUNT(name) FROM sample51 GROUP BY name HAVING COUNT(name) = 1;
+
+SELECT name, COUNT(name) FROM sample51 WHERE COUNT(name) = 1 GROUP BY name;	# 에러. 해석 순서 때문에
+
+내부처리 순서
+WHERE 구 -> GROUP BY 구 -> HAVING 구 -> SELECT 구 -> ORDER BY 구
+
+SELECT name AS n, COUNT(name) AS cn FROM sample51 GROUP BY n  HAVING cn = 1;	# MySQL 정상 실행. Oracle 에서 에러(해석 순서 때문에 별명을 쓸 수 없음)
+
+복수열의 그룹화
+GROUP BY를 사용할 때 주의할 점이 하나 더 있다. 
+GROUP BY에 지정한 열 이외의 열은 집계함수를 사용하지 않은 채 SELECT 구에 기술해서는 안 된다.
+
+SELECT * FROM sample51;
+SELECT no, name, quantity FROM sample51 GROUP BY name;	# MySQL 8.0 OK. 그러나 데이터 베이스에 따라서는 에러가 날 수 있다. -> MySQL8.0 마이너 업데이트 되면서 다시 에러
+name은 GROUP BY 에서 지정하므로 OK.
+no, quantity는 지정할 수 없다.
+A의 값이 1, 2 같이 두 개이므로 어느 값을 출력해야 될 지 모르기 때문에.
+
+SELECT MIN(no), name, SUM(quantity) FROM sample51 GROUP BY name;
+
+만약 no와 quantity로 그룹화한다면 GROUP BY no, quantity로 지정한다. 
+이처럼 GROUP BY에서 지정한 열이라면 SELECT 구에 그대로 지정해도 된다.
+
+SELECT name, quantity FROM sample51 GROUP BY name, quantity;
+
+결괏값 정렬
+name 열로 그룹화해 합계를 구하고 내림차순으로 정렬
+SELECT name, COUNT(name), SUM(quantity) FROM sample51 GROUP BY name ORDER BY SUM(quantity) DESC;

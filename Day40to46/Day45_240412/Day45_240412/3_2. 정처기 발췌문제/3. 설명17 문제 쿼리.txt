@@ -1,0 +1,19 @@
+CREATE TABLE 학생(학번 VARCHAR(10), 이름 VARCHAR(10), 학년 CHAR(1), 학과 VARCHAR(10), 주소 VARCHAR(10));
+
+INSERT INTO 학생 VALUES('1000', '김철수', '1', '전산', '서울');
+INSERT INTO 학생 VALUES('2000', '고영준', '1', '전기', '경기');
+INSERT INTO 학생 VALUES('3000', '유진호', '2', '전자', '경기');
+INSERT INTO 학생 VALUES('4000', '김영진', '2', '전산', '경기');
+INSERT INTO 학생 VALUES('5000', '정현영', '3', '전자', '서울');
+
+CREATE TABLE 성적(학번 VARCHAR(10), 과목번호 VARCHAR(10), 과목이름 VARCHAR(10), 학점 VARCHAR(10), 점수 INT);
+
+INSERT INTO 성적 VALUES('1000', 'A100', '자료구조', 'A', 91);
+INSERT INTO 성적 VALUES('2000', 'A200', 'DB', 'A+', 99);
+INSERT INTO 성적 VALUES('3000', 'A100', '자료구조', 'B+', 88);
+INSERT INTO 성적 VALUES('3000', 'A200', 'DB', 'B', 85);
+INSERT INTO 성적 VALUES('4000', 'A200', 'DB', 'A', 94);
+INSERT INTO 성적 VALUES('4000', 'A300', '운영체제', 'B+', 89);
+INSERT INTO 성적 VALUES('5000', 'A300', '운영체제', 'B', 88);
+
+SELECT 과목이름 FROM 성적 WHERE EXISTS(SELECT 학번 FROM 학생 WHERE 학생.학번 = 성적.학번 AND 학과 IN('전산', '전기') AND 주소 = '경기');

@@ -1,0 +1,14 @@
+jdbc 다운로드 및 설치
+http://dev.mysql.com/
+download 탭 선택
+제일 하단 MySQL Community (GPL) Downloads >> 클릭
+Connector/J 클릭
+Platform Independent  선택
+Platform Independent (Architecture Independent), ZIP Archive 클릭
+압축 해제된 파일에서 mysql-connector-java-8.0.21.jar 파일을
+c:\JavaStudy\JDBCJar에 복사.
+
+이클립스에서 새로운 프로젝트를 만든다.(JDBCTest)
+프로젝트 선택하고 오른쪽 클릭 - Build Path - Configure Build Path...
+Libraries에서 Classpath 클릭 - Add External JARs... 선택
+c:\JavaStudy\JDBCJar\mysql-connector-java-8.0.21.jar 선택
