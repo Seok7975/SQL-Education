@@ -1,9 +1,0 @@
-select host, user from mysql.user;
-
-create user test_user@localhost identified by '1234';	# localhost에서만 접속가능
-create user 'test_user'@'%' identified by '1234';	# 모든 곳에서 접속 가능
-
-drop user test_user;
-select host, user from mysql.user;
-drop user test_user@localhost;
-select host, user from mysql.user;

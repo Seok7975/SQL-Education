@@ -1,8 +1,0 @@
-0. 컴퓨터 이름은 꼭 영문일 것
-1. www.mysql.com
-2. download 클릭
-3. 밑에 MySQL Community (GPL) Downloads » 클릭
-4. MySQL Community Server 클릭
-5. Windows(x86, 32 & 64-bit), MySQL Installer MSI 클릭
-6. next만클릭
-7. 비밀번호 1234
