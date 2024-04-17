@@ -1,0 +1,129 @@
+1. 데이터베이스 모델링 툴
+
+(1) MySQL Workbench에서 
+File - New Model 메뉴 실행. 
+[MySQL Model]탭이 생성되며 [Physical Schemas]에 'mydb'라는 빈 데이터베이스 모델링이 준비된다.
+다이어그램을 추가하기 위해 [Model Overview]패널에서 'Add Diagram'을 더블 클릭한다.
+
+(2) [EER Diagram] 탭이 추가되면 툴바에서 Place a new table 아이콘을 클릭한 후
+[Diagram] 패널의 빈 곳을 클릭하여 테이블 이름과 열 이름, 데이터 형식 등을 설정할 수 있다.
+
+예) Table Name : userTable
+userID		int			pk nn
+userName	varchar(45)
+userAddr	varchar(45)
+
+2. [SCHEMAS] 패널의 빈 부분에서 마우스 오른쪽 버튼을 클릭한 후 [Create Schema]를 선택
+'shop_db' 입력후 [Apply] 클릭.
+[Finish] 클릭.
+
+※ MySQL Workbench 창의 [SCHEMAS] 패널에서 'shop_db'의 >를 클릭해 확장하고
+[Tables]를 마우스 오른쪽 버튼으로 클릭한 후 [Create Table]을 선택한다.
+
+3. 회원(member) 테이블 만들기
+아이디(기본 키)	member_id	 	문자(char)	8글자		pk	nn
+회원 이름		member_name		문자(char)	5글자		nn
+주소		member_addr		문자(char)	20글자
+[Apply] 버튼 클릭
+추가적인 창에서 [Apply]누른후 [Finish] 클릭
+
+4. 제품(product) 테이블 만들기 
+제품 이름(기본 키)		product_name	문자(char) 4글자		pk	nn
+가격			cost		숫자(int)		nn
+제조일자			make_date	날짜(Date)
+제조회사			company		문자(char) 5글자
+남은 수량			amount		숫자(int)
+[Apply] 버튼 클릭
+추가적인 창에서 [Apply]누른후 [Finish] 클릭
+
+5. 회원 테이블(member)에 다음 데이터를 입력
+MySQL Workbench 창의 [SCHEMAS] 패널에서 [shop_db]-[Tables]-[member]를
+선택하고 마우스 오른쪽 버튼을 클릭한 후[Select Rows-Limits 1000]을 선택
+MySQL Workbench 창의 중앙에 [Result Grid] 창이 나타난다.
+[member_id], [member_name], [member_addr] 항목의 'NULL' 부분을 클릭해서
+다음과 같이 데이터를 입력한다. 우측 하단에서 [Apply] 버튼을 클릭하면 입력한
+내용이 SQL로 생성된다.
+
+아이디	회원 이름		주소
+tess	나훈아		경기 부천시 중동
+hero	임영웅		서울 은평구 증산동
+iyou	아이유		인천 남구 주안동
+jyp	박진영		경기 고양시 장항동
+
+6. 제품(product) 테이블(5와 같은 방법으로 입력한다.)
+
+제품 이름		가격	제조일자		제조회사		남은 수량
+바나나		1500	2021-07-01	델몬트		17
+카스		2500	2022-03-01	OB		3
+삼각김밥		800	2023-09-01	CJ		22
+
+7. [SCHEMAS] 패널의 회원 테이블(member)에서 마우스 오른쪽 버튼을 클릭하고 
+[Select Rows - Limits 1000]
+member_id에 carry, member_name에 머라이어, member_addr에 미국 텍사스 사막
+을 입력한다.
+그리고 Apply클릭, Finish 클릭.
+그리고, 주소를 '영국 런던 먹자골목'으로 바꾼다. 그리고 Apply클릭, Finish 클릭.
+
+8. 회원 테이블에서 carry를 선택하고, 마우스 오른쪽 버튼을 클릭
+[Delete Row]를 선택. 삭제하고 [Apply] 버튼을 클릭. Finish 클릭.
+
+9. 쿼리 창이 열려 있지 않다면, 새 SQL을 입력하기 위해 툴바의 Create a new SQL tab
+for executing queries 아이콘을 클릭한다.
+
+10. 작업할 데이터베이스를 선택하기 위해 [SCHEMAS] 패널의 'shop_db'를 더블 클릭한다.
+진하게 변경되면 앞으로 쿼리 창에 입력할 SQL이 선택된 shop_db에 적용된다는 의미이다.
+
+회원 테이블(member)의 모든 열을 보여줘.
+SELECT * FROM member;
+
+11. 회원 테이블(member)의 회원 이름(member_name)과 주소(member_addr)을 출력하시오.
+SELECT member_name, member_addr FROM member;
+
+12. 회원 테이블(member)의 회원이름(member_name)이 '아이유'인 사람의 모든 정보를 출력하시오.
+SELECT * FROM member WHERE member_name = '아이유';
+어떻게 아이유를 찾았는지 확인하기 위해[Execution Plan(실행 계획)] 탭을 클릭하면 Full Table Scan
+이라고 나온다. 
+
+13. 회원 테이블에 member_name에 인덱스를 만들어 보자.
+CREATE INDEX idx_member_name ON member(member_name);
+그리고 회원 테이블(member)의 회원이름(member_name)이 '아이유'인 사람의 모든 정보를 출력해보자.
+SELECT * FROM member WHERE member_name = '아이유';
+
+[Execution Plan] 탭을 보면 Non-Unique Key Lookup이라고 나온다.
+Key Lookup은 인덱스를 통해 결과를 찾았다고 기억하면 된다. 이런 방법을 인덱스 검색(Index Scan)
+이라고 부른다.
+
+14. 회원 테이블(member)에 있는 모든 요소를 가지고 member_view라는 view를 만드시오.
+CREATE VIEW member_view AS SELECT * FROM member;
+
+15. 스토어드 프로시저
+스토어드 프로시저(stored procedure)란 
+MySQL에서 제공하는 프로그래밍 기능으로, 여러 개의 SQL 문을
+하나로 묶어서 편리하게 사용할 수 있다.
+
+16. 회원(member) 테이블에서 이름(member_name)이 '나훈아'인 사람의 모든 정보 출력.
+제품(product) 테이블에서 제품 이름(product_name)이 '삼각김밥'인 제품의 모든 정보 출력.
+위의 두 쿼리문을 스토어드 프로시저로 만들자.
+
+DELIMITER //
+CREATE PROCEDURE myProc()
+BEGIN
+	SELECT * FROM member WHERE member_name = '나훈아';
+    	SELECT * FROM product WHERE product_name = '삼각김밥';
+END //
+DELIMITER ;
+
+17. 16번에서 만든 스토어드 프로시저를 호출해 보자.
+CALL myProc();
+
+18. 16번에서 생성한 스토어드 프로시저를 삭제하려면
+DROP PROCEDURE myProc;
+
+참고
+
+-- DB 상관없이 모든 프로시저 출력
+show procedure status;
+
+-- 특정 DB 만 출력하기 sys에 자기의 DB 명을 입력하면된다.
+show procedure status where Db = 'sys';
+show procedure status where Db = 'market_db';
