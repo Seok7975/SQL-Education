@@ -66,7 +66,8 @@ SELECT mem_id, mem_name, debut_date FROM member ORDER BY debut_date desc;
 SELECT mem_id, mem_name, debut_date, height FROM member WHERE height >= 164 ORDER BY height DESC;
 
 회원(member) 테이블에서 키가 164이상인 회원의 아이디(mem_id), 이름(mem_name), 데뷔날짜(debut_date), 키(height)를 키 내림차순, 데뷔날짜 오름차순으로 정렬하여 출력하시오.
-SELECT mem_id, mem_name, debut_date, height FROM member WHERE height >= 164 ORDER BY height DESC, debut_date ASC;
+SELECT mem_id, mem_name, debut_date, height FROM member 
+WHERE height >= 164 ORDER BY height DESC, debut_date ASC;
 
 출력의 개수를 제한 : LIMIT
 
@@ -78,9 +79,11 @@ SELECT * FROM MEMBER LIMIT 3;
 회원 테이블(member)에서 데뷔날짜가 빠른 회원의 이름(mem_name), 데뷔 날짜(debut_date)를 데뷔순으로 3건을 출력하자.
 SELECT mem_name, debut_date FROM member ORDER BY debut_date LIMIT 3;
 
-(LIMIT 형식은 LIMIT 시작, 개수이다. 지금과 같이 LIMIT 3만 쓰면 LIMIT 0, 3과 동일하다. 즉, 0번째부터 3건이라는 의미이다.)
+(LIMIT 형식은 LIMIT 시작, 개수이다. 지금과 같이 LIMIT 3만 쓰면 LIMIT 0, 3과 동일하다. 
+즉, 0번째부터 3건이라는 의미이다.)
 참고 :
-LIMIT 시작, 개수는 LIMIT 개수 OFFSET 시작이라고 쓰는 것과 동일하다. 또한 LIMIT는 첫 데이터를 0번으로 설정하고 시작한다.
+LIMIT 시작, 개수는 LIMIT 개수 OFFSET 시작이라고 쓰는 것과 동일하다. 
+또한 LIMIT는 첫 데이터를 0번으로 설정하고 시작한다.
 
 회원(member)테이블에서 이름(mem_name), 키(height) 키로 내림차순 정렬해서 3번째 2개를 가져와서 출력하자.
 SELECT mem_name, height FROM member ORDER BY height DESC LIMIT 3, 2;
@@ -130,12 +133,18 @@ SELECT COUNT(phone1) "연락처가 있는 회원" FROM member;
 SELECT mem_id "회원 아이디", SUM(price * amount) "총 구매 금액" FROM buy GROUP BY mem_id;
 
 구매(buy)에서 회원 아이(mem_id)로 그룹핑 했을 때, 총 구매 금액(price * amount의 합계)이 1000이상인 것의 ,아이디(mem_id) 별칭 "회원 아이디", 총 구매 금액(price * amount의 합계) 별칭 "총 구매 금액"을 출력하시오.
-SELECT mem_id "회원 아이디", SUM(price * amount) "총 구매 금액" FROM buy GROUP BY mem_id HAVING SUM(price*amount) > 1000;
+SELECT mem_id "회원 아이디", SUM(price * amount) "총 구매 금액" FROM buy 
+GROUP BY mem_id HAVING SUM(price*amount) > 1000;
 
 구매(buy) 테이블에서 회원 아이디(mem_id)로 그룹핑 했을 때 총 구매 금액(price * amount)가 1000 이상인 회원의 회원 아이디(mem_id - 별칭 "회원 아이디"), 총 구매 금액(price * amount)를 출력 하는데 총 구매 금액의 내림차순으로 출력 하시오.
-SELECT mem_id "회원 아이디", SUM(price*amount) "총 구매 금액" FROM buy GROUP BY mem_id HAVING SUM(price*amount) > 1000 ORDER BY SUM(price*amount) DESC;
+SELECT mem_id "회원 아이디", SUM(price*amount) "총 구매 금액" 
+FROM buy GROUP BY mem_id 
+HAVING SUM(price*amount) > 1000 
+ORDER BY SUM(price*amount) DESC;
 
-(HAVING은 WHERE와 비슷한 개념으로 조건을 제한하는 것이지만, 집계 함수에 대해서 조건을 제한하는 것이라고 생각하면 된다. 그리고 HAVING 절은 꼭 GROUP BY 절 다음에 나와야 한다.)
+(HAVING은 WHERE와 비슷한 개념으로 조건을 제한하는 것이지만, 
+집계 함수에 대해서 조건을 제한하는 것이라고 생각하면 된다. 
+그리고 HAVING 절은 꼭 GROUP BY 절 다음에 나와야 한다.)
 
 데이터 입력 : INSERT
 
