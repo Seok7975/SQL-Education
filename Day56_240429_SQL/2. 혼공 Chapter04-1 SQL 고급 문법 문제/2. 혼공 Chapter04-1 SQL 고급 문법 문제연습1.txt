@@ -1,0 +1,159 @@
+정수형
+
+1. 
+데이터 형식	바이트 수		숫자 범위
+(TINYINT)		1		-128 ~ 127
+(SMALLINT)	2		-32,768 ~ 32,767
+(INT)		4		약 -21억 ~ + 21억
+(BIGINT)		8		약 -900경 ~ +900경
+
+2. 
+TINYINT		1바이트	-128 ~ 127
+(UNSIGNED)		0 ~ 255
+
+3. VARCHAR가 CHAR보다 공간을 효율적으로 운영할 수 있지만, MySQL 내부적으로
+성능(빠른 속도)면에서는 (CHAR)로 설정하는 것이 조금 더 좋다.
+
+4. 실수형
+실수형은 소수점이 있는 숫자를 저장할 때 사용한다.
+
+데이터 형식	바이트 수		설명
+(FLOAT)		4		소수점 아래 7자리까지 표현
+(DOUBLE)		8		소수점 아래 15자리까지 표현
+
+5. 날짜형
+날짜형은 날짜 및 시간을 저장할 때 사용한다.
+
+데이터 형식	바이트 수		설명
+(DATE)		3		날짜만 저장. YYYY-MM-DD 형식으로 사용
+(TIME)		3		시간만 저장. HH:MM:SS 형식으로 사용
+(DATETIME)	8		날짜 및 시간을 저장 YYYY-MM-DD HH:MM:SS 형식으로 사용
+
+6. 변수 두 개를 설정하고 그 변수 두개를 더한 값을 출력하자.
+SELECT @myVar1 + @myVar2;
+실행 결과 :  8
+
+7. 실행 결과가 다음과 같이 나오도록 변수 @txt와 @height를 설정하시오.
+@height는 166으로 설정한다.
+
+SELECT @txt, mem_name FROM member WHERE height > @height; 
+
++---------------+----------+
+| @txt          | mem_name |
++---------------+----------+
+| 가수 이름==>  | 소녀시대 |
+| 가수 이름==>  | 잇지     |
+| 가수 이름==>  | 트와이스 |
++---------------+----------+
+
+8. SELECT 문에서 행의 개수를 제한하는 LIMIT에도 변수를 사용해보자. 이 SQL은 SELECT문에서
+오류가 발생한다. LIMIT에는 변수를 사용할 수 없기 때문에 문법상 오류이다.
+
+SET @count = 3;
+SELECT mem_name, height FROM member ORDER BY height LIMIT @count;	-- 에러
+
+위의 구문이 에러가 안나도록 PREPARE와 EXECUTE를 이용해서 해결하자.
+
+9. 구매(buy) 테이블의 평균 가격(price)을 정수로 출력하시오.
+SELECT AVG(PRICE) AS '평균 가격' FROM buy;
+
+10. 구매(buy) 테이블의 평균 가격(price)을 정수로 출력하시오.(두 가지 방법)
+
+11. 이번에는 날짜를 확인해 보겠다. 다양한 구분자를 날짜형으로 변경할 수도 있다.
+
+SELECT CAST('2022$12$12' AS DATE);
+SELECT CAST('2022/12/12' AS DATE);
+SELECT CAST('2022%12%12' AS DATE);
+SELECT CAST('2022@12@12' AS DATE);
+
+12. 구매(buy)테이블에서 번호(num), 가격(price)을 
+문자로, 'X', 수량(amount)을 문자로, '=' 전자 4개를 더한다.
+그리고 별칭은 '가격X수량' 이라고 하고, 별칭 "구매액" (price*amount)을 출력한다. 
+SELECT num,
+concat(cast(price as char), 'X',
+cast(amount as char), '=') '가격X수량',
+price*amount '구매액' from buy;
+
+
+13. 암시적인 변환
+암시적인 변환은 CAST()나 CONVERT() 함수를 사용하지 않고도 
+자연스럽게 형이 변환되는 것을 말한다.
+
+SELECT '100' + '200';
+
+-- 실행 결과
+300
+
+SELECT CONCAT('100', '200');
+
+-- 실행 결과
+100200
+
+SELECT CONCAT(100, '200')
+-- 100200
+SELECT 100 + '200';
+-- 300
+
+14. (조인(JOIN))이란 두 개의 테이블을 서로 묶어서 하나의 결과를 만들어 내는 것을 말한다.
+
+15. 구매(buy) 테이블과 회원(member) 테이블로 부터 
+구매 테이블의 회원 아이디(mem_id)와 회원 테이블의 회원 아이디(mem_id)가
+같고 구매 테이블의 회원 아이디가 'GRL'인 회원의 모든 데이터를 출력해라.
+SELECT * FROM buy
+INNER JOIN member ON buy.mem_id = member.mem_id
+WHERE buy.mem_id = 'GRL';
+
+16. 구매(buy) 테이블과 회원(member)테이블로 부터 구매 테이블의 회원 아이디(mem_id)와 회원 테이블 회원 아이디(mem_id)가 같은 것의
+회원 아이디(mem_id), 회원 이름(mem_name), 제품 이름(prod_name), 주소(addr), 전화번호(PHONE1, PHONE2 별칭 '연락처')를 출력하시오.
+
+17. 구매 테이블(buy)과 회원 테이블(member)에서 구매 테이블의 회원 아이디(mem_id)와 회원 테이블의 회원 아이디(mem_id)가 같은 것들의
+회원 아이디(mem_id), 회원 이름(mem_name), 회원 주소(addr)을 회원 아이디(mem_id) 오름 차순으로 출력하시오.
+
+18. 내부 조인은 두 테이블에 모두 데이터가 있어야만 결과가 나온다. 이와 달리 (          )은 한쪽에만 데이터가 있어도 결과가 나온다.
+
+19. 회원 테이블(member)과  구매 테이블(buy)로 부터 회원 테이블의 아이디(mem_id)와  구매 테이블의 아이디(mem_id)과 같은 것들의
+전체 회원의 구매 기록(구매 기록이 없는 회원의 정보도 함께) 출력하는데, 회원 아이디(mem_id), 회원 이름(mem_name), 제품 이름(prod_name), 주소(addr)를 회원 아이디(mem_id) 오름차순으로 출력하자.
+
+20. 회원 테이블(member)과 구매 테이블(buy)로 부터 회원 테이블의 회원 아이디(mem_id)와 구매 테이블의 회원 아이디(mem_id)과
+같은 것들중에 한번도 구매한 적 없는 회원 들의 회원 아이디(mem_id), 제품 이름(prod_name), 회원 이름(mem_name), 주소(addr)을
+회원 아이디 오름 차순으로 출력하시오.
+
+21. (               )은 왼쪽 외부 조인과 오른쪽 외부 조인이 합쳐진 것이라고 생각하면 된다.
+왼쪽이든 오른쪽이든 한쪽에 들어 있는 내용이면 출력한다.
+
+22. (          )은 한쪽 테이블의 모든 행과 다른 쪽 테이블의 모든 행을 조인시키는 기능을
+말한다. 그래서 상호 조인 결과의 전체 행 개수는 두 테이블의 각 행의 개수를 곱한 개수가 된다.
+
+참고. (          )을 카티션 곱(CARTESIAN PRODUCT)이라고도 부른다.
+
+23. 회원 테이블(member)과 구매 테이블(buy)를 상호 조인 하시오.
+
+24. (          )은 다음과 같은 특징을 갖는다.
+
+* ON 구문을 사용할 수 없다.
+* 결과의 내용은 의미가 없다. 랜덤으로 조인하기 때문이다.
+* 상호 조인의 주 용도는 테스트하기 위해 대용량의 데이터를 생성할 때이다.
+
+25. sakila.inventory 테이블과 world.city테이블을 상호 조인한후 행의 개수를 출력하시오.
+
+26. sakila.actor테이블과 world.country를 상호 조인한 cross_table을 만드시오.
+
+27. cross_table의 5건의  모든 열의 데이터를 출력하시오.
+
+28. 내부 조인, 외부 조인, 상호 조인은 모두 2개의 테이블을 조인했다. (         )은 자신이
+자신과 조인한다는 의미이다. 그래서 (         )은 1개의 테이블을 사용한다. 또 별도의 문법이 있는
+것은 아니고 1개로 조인하면 (         )이 되는 것이다.
+
+USE market_db;
+CREATE TABLE emp_table(emp CHAR(4), manager CHAR(4), phone VARCHAR(8));
+INSERT INTO emp_table VALUES('대표', NULL, '0000');
+INSERT INTO emp_table VALUES('영업이사', '대표', '1111');
+INSERT INTO emp_table VALUES('관리이사', '대표', '2222');
+INSERT INTO emp_table VALUES('정보이사', '대표', '3333');
+INSERT INTO emp_table VALUES('영업과장', '영업이사', '1111-1');
+INSERT INTO emp_table VALUES('경리부장', '관리이사', '2222-1');
+INSERT INTO emp_table VALUES('인사부장', '관리이사', '2222-2');
+INSERT INTO emp_table VALUES('개발팀장', '정보이사', '3333-1');
+INSERT INTO emp_table VALUES('개발주임', '정보이사', '3333-1-1');
+
+29. 직원 테이블(emp_table)로 부터 경리부장인 직원의 직원(emp), 직속상관(emp), 직속상관연락처(phone)을 출력하시오.

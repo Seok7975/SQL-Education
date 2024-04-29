@@ -1,0 +1,389 @@
+데이터 형식
+MySQL에서 제공하는 데이터 형식의 종류는 수십 개 정도이고, 각 데이터 형식마다 크기나 표현할 수 있는 숫자의 범위가 다르다.
+
+정수형
+
+데이터 형식	바이트 수		숫자 범위
+TINYINT		1		-128 ~ 127
+SMALLINT	2		-32,768 ~ 32,767
+INT		4		약 -21억 ~ + 21억
+BIGINT		8		약 -900경 ~ +900경
+
+추가로 BIT, MEDIUMINT도 있으나 잘 사용하지 않는다.
+
+USE market_db;
+hongong4 테이블을 다음의 자료형으로 만든다.
+tinyint_col	TINYINT,
+smallint_col SMALLINT,
+int_col INT,
+bigint_col BIGINT
+
+CREATE TABLE hongong4(
+tinyint_col	TINYINT,
+smallint_col SMALLINT,
+int_col INT,
+bigint_col BIGINT);
+
+각 열의 최대값을 입력해보자.
+INSERT INTO hongong4 VALUES(127, 32767, 2147483647, 9000000000000000000);
+
+이번에는 각 숫자에 1을 더해서 입력한다. 마지막 값에는 0을 하나 더 붙인다.
+INSERT INTO hongong4 VALUES(128, 32768, 2147483648, 90000000000000000000);
+
+다음과 같이 오류가 발생한다. Out of range는 입력값의 범위를 벗어났다는 의미이다.
+Error Code: 1264. Out of range value for column 'tinyint_col' at row 1
+
+TINYINT	1바이트	-128 ~ 127
+TINYINT UNSIGNED		0 ~ 255
+
+나머지 정수형도 마찬가지로 UNSIGNED를 붙이면 0부터 범위가 지정된다.
+예를 들어 SMALLINT UNSIGNED는 0부터 65535까지 저장된다.
+
+문자형
+
+데이터 형식		바이트 수
+CHAR(개수)		1 ~ 255
+VARCHAR(개수)		1 ~ 16383
+
+참고. 문자형에는 BINARY, VARBINARY도 있지만 잘 사용하지 않는다.
+
+CHAR는 문자를 의미하는 Character의 약자로, 고정길이 문자형이라고 부른다. 즉,
+자릿수가 고정되어 있다. 예를 들어 CHAR(10)에 '가나다' 3글자만 저장해도 10자리를
+모두 확보한 후에 앞에 3자리를 사용하고 뒤의 7자리는 낭비하게 된다. 이와 달리
+VARCHAR(Variable Character)는 가변길이 문자형으로, VARCHAR(10)에 '가나다'
+3글자를 저장할 경우 3자리만 사용한다.
+VARCHAR가 CHAR보다 공간을 효율적으로 운영할 수 있지만, MySQL 내부적으로
+성능(빠른 속도)면에서는 CHAR로 설정하는 것이 조금 더 좋다.
+
+참고. CHAR, VARCHAR로만 쓰면 CHAR(1), VARCHAR(1)과 동일하다.
+
+대량의 데이터 형식
+문자형인 CHAR는 최대 255자까지, VARCHAR는 최대 16383자까지 지정이 가능하다.
+즉, 다음과 같은 테이블 만들기는 오류가 발생한다. 열의 길이를 너무 크게 설정했다는
+오류이다.
+
+CREATE TABLE big_table(
+data1 CHAR(256),
+data2 VARCHAR(16384)
+);
+
+Error Code: 1074. Column length too big for column 'data1' (max = 255); use BLOB or TEXT instead
+
+그래서 더 큰 데이터를 저장하려면 다음과 같은 형식을 사용한다.
+
+데이터 형식			바이트 수
+
+TEXT 형식	TEXT		1 ~ 65535
+		LONGTEXT	1 ~ 4294967295
+BLOB 형식	BLOB		1 ~ 65535
+		LONGBLOB	1 ~ 4294967295
+
+TEXT로 지정하면 최대 65535자까지, LONGTEXT로 지정하면 최대 약 42억자까지 저장된다.
+'이렇게 많은 글자를 저장할 일이 있을까?"라고 생각할 수 있지만, 소설이나 영화 대본과 같은
+내용을 저장한다면 필요한 데이터 형식이다.
+또, BLOB라는 용어가 등장했는데 BLOB는 Binary Long Object의 약자로 글자가 아닌 이미지,
+동영상 등의 데이터라고 생각하면 된다. 이런 것을 이진(Binary) 데이터라고 부른다. 테이블에
+사진이나 동영상과 같은 것을 저장하고 싶다면 BLOB이나 LONGBLOB으로 데이터 형식을 
+지정해야 한다.
+
+참고. 추가로 TINYTEXT, MEDIUMTEXT, TINYBLOB, MEDIUMBLOB등도 있지만 잘 사용하지
+않는다.
+
+CREATE DATABASE netflix_db;
+USE netflix_db;
+CREATE TABLE movie
+(
+movie_id	INT,
+movie_title VARCHAR(30),
+movie_director VARCHAR(20),
+movie_star VARCHAR(20),
+movie_script LONGTEXT,
+movie_film LONGBLOB
+)
+
+다른 열은 정수형이나 문자형으로 지정하면 되며, 자막(movie_script) 열은 LONGTEXT,
+동영상(movie_filem)열은 LONGBLOB로 설정해야 대용량의 텍스트와 이진 데이터를 저장할 수
+있다. LONGTEXT 및 LONGBLOB로 설정하면 각 데이터는 최대 4GB까지 입력할 수 있다.
+
+실수형
+실수형은 소수점이 있는 숫자를 저장할 때 사용한다.
+
+데이터 형식	바이트 수		설명
+FLOAT		4		소수점 아래 7자리까지 표현
+DOUBLE		8		소수점 아래 15자리까지 표현
+
+날짜형
+날짜형은 날짜 및 시간을 저장할 때 사용한다.
+
+데이터 형식	바이트 수		설명
+DATE		3		날짜만 저장. YYYY-MM-DD 형식으로 사용
+TIME		3		시간만 저장. HH:MM:SS 형식으로 사용
+DATETIME	8		날짜 및 시간을 저장 YYYY-MM-DD HH:MM:SS 형식으로 사용
+
+변수의 사용
+SET @변수이름 = 변수의 값;		-> 변수의 선언 및 값 대입
+SELECT @변수이름;		-> 변수의 값 출력
+
+변수는 MySQL 워크벤치를 재시작할 때까지는 유지되지만, 종료하면 없어진다.
+
+6. 
+USE market_db;
+SET @myVar1 = 5;
+SET @myVar2 = 4.25;
+
+SELECT @myVar1;
+SELECT @myVar1 + @myVar2;
+
+7.
+SET @txt = '가수 이름==> ';
+SET @height = 166;
+SELECT @txt, mem_name FROM member WHERE height > @height; 
+
+8.
+SELECT 문에서 행의 개수를 제한하는 LIMIT에도 변수를 사용해보자. 이 SQL은 SELECT문에서
+오류가 발생한다. LIMIT에는 변수를 사용할 수 없기 때문에 문법상 오류이다.
+
+SET @count = 3;
+SELECT mem_name, height FROM member ORDER BY height LIMIT @count;	-- 에러
+
+이를 해결하는 것이 PREPARE와 EXECUTE이다. PREPARE는 실행하지 않고 SQL 문만 준비해
+놓고 EXECUTE에서 실행하는 방식이다.
+
+SET @count = 3;
+PREPARE mySQL FROM 'SELECT mem_name, height FROM member 
+ORDER BY height LIMIT ?';
+EXECUTE mySQL USING @count;
+
+데이터 형 변환
+문자형을 정수형으로 바꾸거나, 반대로 정수형을 문자형으로 바꾸는 것을 데이터의 형변환(type conversion)
+이라고 부른다. 형 변환에는 직접 함수를 사용해서 변환하는 명시적인 변환(explicit conversion)과 별도의
+지시 없이 자연스럽게 변환되는 암시적인 변환(implicit conversion)이 있다.
+
+함수를 이용한 명시적인 변환
+데이터 형식을 변환하는 함수는 CAST(), CONVERT()이다. CAST(), CONVERT()는 형식만 다를 뿐
+동일한 기능을 한다.
+
+CAST (값 AS 데이터_형식 [(길이)])
+CONVERT (값, 데이터_형식 [(길이)])
+
+
+SELECT AVG(PRICE) AS '평균 가격' FROM buy;
+
+가격은 실수보다 정수로 표현하는 것이 보기 좋을 것 같다. 다음과 같이 CAST()나 CONVERT()함수를
+사용해서 정수로 표현할 수 있다. CAST()나 CONVERT() 함수 안에 올 수 있는 데이터 형식은 CHAR, 
+SIGNED, SIGNED, UNSIGNED, DATE, TIME, DATETIME등입니다. SIGNED는 부호가 있는 정수,
+UNSIGNED는 부호가 없는 정수를 의미한다.
+
+
+9.
+구매(buy) 테이블의 평균 가격(price)을 정수로 출력하시오.
+SELECT CAST(AVG(price) AS SIGNED) '평균 가격' FROM buy;
+-- 또는
+SELECT CONVERT(AVG(price) ,SIGNED) '평균 가격' FROM buy;
+
+SIGNED는 SIGNED INTEGER, UNSIGNED는 UNSIGNED INTEGER라고 써도 된다.
+
+이번에는 날짜를 확인해 보겠다. 다양한 구분자를 날짜형으로 변경할 수도 있다.
+
+SELECT CAST('2022$12$12' AS DATE);
+SELECT CAST('2022/12/12' AS DATE);
+SELECT CAST('2022%12%12' AS DATE);
+SELECT CAST('2022@12@12' AS DATE);
+
+SQL의 결과를 원하는 형태로 표현할 때도 사용할 수 있다. 가격(price)과 수량(amount)을
+곱한 실제 구매액을 표시하는 SQL을 다음과 같이 작성할 수 있다.
+
+
+12.
+구매(buy)테이블에서 번호(num)와 가격(price)를 문자로, 'X', 수량(amount)를 
+문자로 바꾼후 전자 3개를 더한다.
+그리고 별칭은 '가격X수량' 이라고 하고, 구매액(price*amount)을 출력한다. 
+SELECT num, 
+CONCAT(CAST(price AS CHAR), 'X', 
+CAST(amount AS CHAR), '=') '가격X수량', 
+price*amount '구매액' FROM buy;
+가격(price)과 수량(amount)은 정수지만, CAST() 함수를 통해 문자로 바꿨다. 
+CONCAT() 함수는 문자를 이어주는 역할을 하며, 
+여기서는 '30X2='과 같은 형태의 문자로 만들어서 출력했다.
+
+
+13.
+암시적인 변환
+암시적인 변환은 CAST()나 CONVERT() 함수를 사용하지 않고도 
+자연스럽게 형이 변환되는 것을 말한다.
+
+SELECT '100' + '200';
+
+-- 실행 결과
+300
+
+SELECT CONCAT('100', '200');
+
+-- 실행 결과
+100200
+
+SELECT CONCAT(100, '200')
+-- 100200
+SELECT 100 + '200';
+-- 300
+
+두 테이블을 묶는 조인
+조인(JOIN)이란 두 개의 테이블을 서로 묶어서 하나의 결과를 만들어 내는 것을 말한다.
+
+일대다 관계의 이해
+두 테이블의 조인을 위해서는 테이블이 일대다(one to many)관계로 연결되어야 한다.
+데이터베이스의 테이블은 하나로 구성되는 것보다는 여러 정보를 주제에 따라 분리해서
+저장하는 것이 효율적이다. 이 분리된 테이블은 서로 관계(relation)을 맺고 있다. 이러한
+대표적인 사례가 인터넷 마켓 데이터베이스(market_db)의 회원 테이블과 구매 테이블이다.
+회원 테이블의 아이디와 구매 테이블의 아이디는 일대다 관계이다. 일대다 관계란 
+한쪽 테이블에는 하나의 값만 존재해야 하지만, 연결된 다른 테이블에는 여러 개의 값이
+존재할 수 있는 관계를 말한다.
+
+참고. 일대다 관계는 주로 기본 키(PK)와 외래 키(FK) 관계로 맺어져 있다. 그래서 일대다
+관계를 'PK-FK 관계'라고 부르기도 한다.
+
+인터넷 마켓 외에도 일대다 관계는 많은 현실 세계에서 발견할 수 있다. 회사원
+급여 테이블도 마찬가지이다. 1명의 회사원이 여러 번의 급여를 받아야 하므로 일대다 
+관계이다. 학생 테이블과 학점 테이블도 1명의 학생이 여러 과목의 학점을 받아야 하므로
+일대다 관계로 설정된다.
+
+참고. 꼭 기본 키-외래키 관계가 아니어도 가능한 조인도 있다. 상호 조인이 대표적이다.
+상호 조인 외의 조인은 기본 키-외래 키 관계가 핵심 요소이다.
+
+내부 조인의 기본
+일반적으로 조인이라고 부르는 것은 내부 조인(INNER JOIN)을 말하는 것으로, 조인 중에서 가장 많이
+사용 된다.
+
+SELECT <열 목록>
+FROM <첫 번째 테이블>
+	INNER JOIN <두 번째 테이블>
+	ON <조인될 조건>
+[WHERE 검색 조건]
+
+참고. INNER JOIN을 그냥 JOIN이라고만 써도 INNER JOIN으로 인식한다.
+
+USE market_db;
+
+구매(buy) 테이블과 회원(member) 테이블로 부터 
+구매 테이블의 회원 아이디(mem_id)와 회원 테이블의 회원 아이디(mem_id)과
+같고 구매 테이블의 회원 아이디가 'GRL'인 회원의 모든 데이터를 출력해라.
+SELECT * FROM buy 
+INNER JOIN member ON buy.mem_id = member.mem_id WHERE buy.MEM_ID = 'GRL';
+
+구매(buy) 테이블과 회원(member)테이블로 부터 구매 테이블의 회원 아이디(mem_id)와 회원 테이블(mem_id)과 같은 것의
+회원 아이디(mem_id), 회원 이름(mem_name), 제품 이름(prod_name), 주소(addr), 전화번호(별칭 '연락처')를 출력하시오.
+
+SELECT buy.mem_id, member.mem_name, buy.prod_name, member.addr, CONCAT(member.phone1, member.phone2) '연락처' FROM buy INNER JOIN member
+ON buy.mem_id = member.mem_id;
+
+SELECT B.mem_id, M.mem_name, B.prod_name, M.addr, CONCAT(M.phone1, M.phone2) '연락처' FROM buy B INNER JOIN member M
+ON B.mem_id = M.mem_id;
+
+"우리 사이트에서 한 번이라도 구매한 기록이 있는 회원들에게 감사의 안내문을 발송합시다."
+위와 같은 상황에 대응하기 위해서
+
+구매 테이블(buy)과 회원 테이블(member)에서 구매 테이블의 회원 아이디(mem_id)와 회원 테이블의 회원 아이디(mem_id)과 같은 것들의
+회원 아이디(mem_id), 회원 이름(mem_name), 회원 주소(addr)을 회원 아이디 오름 차순으로 출력하시오.
+
+SELECT DISTINCT M.mem_id, M.mem_name, M.addr FROM buy B INNER JOIN member M ON B.mem_id = M.mem_id ORDER BY M.mem_id;
+
+외부(OUTER JOIN) 조인
+내부 조인은 두 테이블에 모두 데이터가 있어야만 결과가 나온다. 이와 달리 외부 조인은 한쪽에만 데이터가 있어도 결과가 나온다.
+
+외부 조인의 기본
+
+SELECT <열 목록>
+FROM <첫 번째 테이블(LEFT 테이블)>
+	<LEFT | RIGHT | FULL> OUTER JOIN <두 번째 테이블(RIGHT 테이블)>
+	ON <조인될 조건>
+[WHERE 검색 조건];
+
+'전체 회원의 구매 기록(구매 기록이 없는 회원의 정보도 함께) 출력'
+
+회원 테이블(member)과  구매 테이블(buy)로 부터 회원 테이블의 아이디(mem_id)와  구매 테이블의 아이디(mem_id)과 같은 것들의
+전체 회원의 구매 기록(구매 기록이 없는 회원의 정보도 함께) 출력하는데, 회원 아이디(mem_id), 회원 이름(mem_name), 제품 이름(prod_name), 주소(addr)를 출력하자.
+
+SELECT M.mem_id, M.mem_name, B.prod_name, M.addr FROM member M LEFT OUTER JOIN buy B ON M.mem_id = B.mem_id ORDER BY M.mem_id;
+
+참고. LEFT OUTER JOIN을 줄여서 LEFT JOIN이라고만 써도 된다.
+
+LEFT OUTER JOIN 문의 의미를 '왼쪽 테이블(member)의 내용은 모두 출력되어야 한다' 정도로 해석하면 기억하기 쉽다.
+
+RIGHT OUTER JOIN으로 동일한 결과를 출력하려면 다음과 같이 단순히 왼쪽과 오른쪽 테이블의 위치만 바꿔주면 된다.
+
+SELECT M.mem_id, M.mem_name, B.prod_name, M.addr FROM buy B RIGHT OUTER JOIN member M ON M.mem_id = B.mem_id ORDER BY M.mem_id;
+
+외부 조인의 활용
+회원으로 가입만 하고, 한번도 구매한 적이 없는 회원의 목록을 추출해 보면
+
+회원 테이블(member)과 구매 테이블(buy)로 부터 회원 테이블의 회원 아이디(mem_id)와 구매 테이블의 회원 아이디(mem_id)과
+같은 것들중에 한번도 구매한 적 없는 회원 들의 회원 아이디(mem_id), 제품 이름(prod_name), 회원 이름(mem_name), 주소(addr)을
+회원 아이디 오름 차순으로 출력하시오.
+
+SELECT DISTINCT M.mem_id, B.prod_name, M.mem_name, M.addr 
+FROM member M LEFT OUTER JOIN buy B ON M.mem_id = B.mem_id
+WHERE B.prod_name IS NULL ORDER BY M.mem_id;
+
+FULL OUTER JOIN은 왼쪽 외부 조인과 오른쪽 외부 조인이 합쳐진 것이라고 생각하면 된다.
+왼쪽이든 오른쪽이든 한쪽에 들어 있는 내용이면 출력한다.
+
+기타 조인
+
+상호 조인
+상호 조인(CROSS JOIN)은 한쪽 테이블의 모든 행과 다른 쪽 테이블의 모든 행을 조인시키는 기능을
+말한다. 그래서 상호 조인 결과의 전체 행 개수는 두 테이블의 각 행의 개수를 곱한 개수가 된다.
+
+참고. 상호 조인을 카티션 곱(CARTESIAN PRODUCT)이라고도 부른다.
+
+회원 테이블(member)과 구매 테이블(buy)를 상호 조인 하시오.
+SELECT * FROM buy CROSS JOIN member;
+
+상호 조인은 다음과 같은 특징을 갖는다.
+
+* ON 구문을 사용할 수 없다.
+* 결과의 내용은 의미가 없다. 랜덤으로 조인하기 때문이다.
+* 상호 조인의 주 용도는 테스트하기 위해 대용량의 데이터를 생성할 때이다.
+
+예를 들어, 샘플 데이터베이스인 sakila의 inventory 테이블에는 4,581건, world의 city 테이블에는
+4,079건이 있다. 두 테이블을 상호 조인시키면 4,581 X 4,079 = 18,685,899가 나온다.
+
+sakila.inventory 테이블과 world.city테이블을 상호 조인한후 행의 개수를 출력하시오.
+SELECT COUNT(*) "데이터 개수" FROM sakila.inventory CROSS JOIN world.city;
+
+sakila.actor테이블과 world.country를 상호 조인한 cross_table을 만드시오.
+CREATE TABLE cross_table SELECT * FROM sakila.actor -- 200건
+CROSS JOIN world.country; -- 239건
+
+cross_table의 5건의  모든 열의 데이터를 출력하시오.
+
+SELECT * FROM cross_table LIMIT 5;
+
+자체 조인(self join)
+내부 조인, 외부 조인, 상호 조인은 모두 2개의 테이블을 조인했다. 자체 조인(self join)은 자신이
+자신과 조인한다는 의미이다. 그래서 자체 조인은 1개의 테이블을 사용한다. 또 별도의 문법이 있는
+것은 아니고 1개로 조인하면 자체 조인이 되는 것이다.
+
+USE market_db;
+CREATE TABLE emp_table(emp CHAR(4), manager CHAR(4), phone VARCHAR(8));
+INSERT INTO emp_table VALUES('대표', NULL, '0000');
+INSERT INTO emp_table VALUES('영업이사', '대표', '1111');
+INSERT INTO emp_table VALUES('관리이사', '대표', '2222');
+INSERT INTO emp_table VALUES('정보이사', '대표', '3333');
+INSERT INTO emp_table VALUES('영업과장', '영업이사', '1111-1');
+INSERT INTO emp_table VALUES('경리부장', '관리이사', '2222-1');
+INSERT INTO emp_table VALUES('인사부장', '관리이사', '2222-2');
+INSERT INTO emp_table VALUES('개발팀장', '정보이사', '3333-1');
+INSERT INTO emp_table VALUES('개발주임', '정보이사', '3333-1-1');
+
+SELECT <열 목록>
+FROM <테이블> 별칭A
+	INNER JOIN <테이블> 별칭B
+	ON <조인될 조건>
+[WHERE 검색 조건]
+
+직원 테이블(emp_table)로 부터 경리부장인 직원의 직원(emp), 직속상관(emp), 직속상관연락처(phone)을 출력하시오.
+SELECT A.emp "직원", B.emp "직속상관", B.phone "직속상관연락처"
+FROM emp_table A
+INNER JOIN emp_table B
+ON A.manager = B.emp
+WHERE A.emp = '경리부장';
