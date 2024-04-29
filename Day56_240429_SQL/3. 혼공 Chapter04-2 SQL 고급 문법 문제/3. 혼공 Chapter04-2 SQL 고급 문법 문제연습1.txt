@@ -4,6 +4,17 @@ ifProc1 스토어드 프로시저를 다음의 내용으로 만든다.
 '100은 100과 같습니다.'라고 출력한다.
 ifProc1을 호출한다.
 
+DROP PROCEDURE IF EXISTS ifProc1;
+DELIMITER $$
+CREATE PROCEDURE ifProc1()
+BEGIN
+	IF 100 = 100 then
+		SELECT '100은 100과 같습니다.';
+	END IF;
+END $$
+DELIMITER ;
+CALL ifProc1();
+
 31. ifProc2 스토어드 프로시저가 존재하면 삭제한다.
 ifProc2 스토어드 프로시저를 다음 내용으로 만든다.
 myNum 변수를 int로 선언한다.
