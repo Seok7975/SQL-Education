@@ -103,32 +103,64 @@ SELECT * FROM buy
 INNER JOIN member ON buy.mem_id = member.mem_id
 WHERE buy.mem_id = 'GRL';
 
-16. 구매(buy) 테이블과 회원(member)테이블로 부터 구매 테이블의 회원 아이디(mem_id)와 회원 테이블 회원 아이디(mem_id)가 같은 것의
-회원 아이디(mem_id), 회원 이름(mem_name), 제품 이름(prod_name), 주소(addr), 전화번호(PHONE1, PHONE2 별칭 '연락처')를 출력하시오.
+16. 구매(buy) 테이블과 회원(member)테이블로 부터 구매 테이블의
+회원 아이디(mem_id)와 회원 테이블 회원 아이디(mem_id)가 같은 것의
+회원 아이디(mem_id), 회원 이름(mem_name), 제품 이름(prod_name), 
+주소(addr), 전화번호(PHONE1, PHONE2 별칭 '연락처')를 출력하시오.
+SELECT buy.mem_id, member.mem_name, 
+buy.prod_name, member.addr, 
+CONCAT(member.phone1, member.phone2) '연락처' FROM buy INNER JOIN member
+ON buy.mem_id = member.mem_id;
 
-17. 구매 테이블(buy)과 회원 테이블(member)에서 구매 테이블의 회원 아이디(mem_id)와 회원 테이블의 회원 아이디(mem_id)가 같은 것들의
-회원 아이디(mem_id), 회원 이름(mem_name), 회원 주소(addr)을 회원 아이디(mem_id) 오름 차순으로 출력하시오.
+17. 구매 테이블(buy)과 회원 테이블(member)에서 구매 테이블의 
+회원 아이디(mem_id)와 회원 테이블의 회원 아이디(mem_id)가 같은 것들의
+회원 아이디(mem_id), 회원 이름(mem_name), 
+회원 주소(addr)을 회원 아이디(mem_id) 오름 차순으로 출력하시오.
+SELECT DISTINCT M.mem_id, M.mem_name, M.addr
+FROM buy B INNER JOIN member M
+ON B.mem_id = M.mem_id ORDER BY M.mem_id;
 
-18. 내부 조인은 두 테이블에 모두 데이터가 있어야만 결과가 나온다. 이와 달리 (          )은 한쪽에만 데이터가 있어도 결과가 나온다.
+-- B와 M은 별칭 부여한것
 
-19. 회원 테이블(member)과  구매 테이블(buy)로 부터 회원 테이블의 아이디(mem_id)와  구매 테이블의 아이디(mem_id)과 같은 것들의
-전체 회원의 구매 기록(구매 기록이 없는 회원의 정보도 함께) 출력하는데, 회원 아이디(mem_id), 회원 이름(mem_name), 제품 이름(prod_name), 주소(addr)를 회원 아이디(mem_id) 오름차순으로 출력하자.
+18. 내부 조인은 두 테이블에 모두 데이터가 있어야만 결과가 나온다. 
+이와 달리 (외부조인(OUTER JOIN))은 한쪽에만 데이터가 있어도 결과가 나온다.
 
-20. 회원 테이블(member)과 구매 테이블(buy)로 부터 회원 테이블의 회원 아이디(mem_id)와 구매 테이블의 회원 아이디(mem_id)과
-같은 것들중에 한번도 구매한 적 없는 회원 들의 회원 아이디(mem_id), 제품 이름(prod_name), 회원 이름(mem_name), 주소(addr)을
+19. 회원 테이블(member)과  구매 테이블(buy)로 부터 
+회원 테이블의 아이디(mem_id)와 구매 테이블의 아이디(mem_id)과 같은 것들의
+전체 회원의 구매 기록(구매 기록이 없는 회원의 정보도 함께) 출력하는데, 
+회원 아이디(mem_id), 회원 이름(mem_name), 제품 이름(prod_name), 
+주소(addr)를 회원 아이디(mem_id) 오름차순으로 출력하자.
+
+SELECT M.mem_id, M.mem_name, B.prod_name, M.addr
+FROM member M LEFT OUTER JOIN buy B ON M.mem_id = B.mem_id
+ORDER BY mem_id
+
+20. 회원 테이블(member)과 구매 테이블(buy)로 부터 
+회원 테이블의 회원 아이디(mem_id)와 구매 테이블의 회원 아이디(mem_id)과
+같은 것들중에 한번도 구매한 적 없는 회원 들의 회원 아이디(mem_id), 
+제품 이름(prod_name), 회원 이름(mem_name), 주소(addr)을
 회원 아이디 오름 차순으로 출력하시오.
 
-21. (               )은 왼쪽 외부 조인과 오른쪽 외부 조인이 합쳐진 것이라고 생각하면 된다.
+SELECT DISTINCT M.mem_id, B.prod_name, M.mem_name, M.addr
+FROM member M LEFT OUTER JOIN buy B
+ON M.mem_id = B.mem_id
+WHERE B.prod_name IS NULL
+ORDER BY M.mem_id;
+
+21. ( FULL OUTER JOIN )은 왼쪽 외부 조인과 오른쪽 외부 조인이 합쳐진 것이라고 생각하면 된다.
 왼쪽이든 오른쪽이든 한쪽에 들어 있는 내용이면 출력한다.
 
-22. (          )은 한쪽 테이블의 모든 행과 다른 쪽 테이블의 모든 행을 조인시키는 기능을
-말한다. 그래서 상호 조인 결과의 전체 행 개수는 두 테이블의 각 행의 개수를 곱한 개수가 된다.
+22. ( 상호 조인(Cross join) )은 한쪽 테이블의 모든 행과 
+다른 쪽 테이블의 모든 행을 조인시키는 기능을 말한다. 
+그래서 상호 조인 결과의 전체 행 개수는 두 테이블의 각 행의 개수를 곱한 개수가 된다.
 
-참고. (          )을 카티션 곱(CARTESIAN PRODUCT)이라고도 부른다.
+참고. (상호 조인)을 카티션 곱(CARTESIAN PRODUCT)이라고도 부른다.
 
 23. 회원 테이블(member)과 구매 테이블(buy)를 상호 조인 하시오.
 
-24. (          )은 다음과 같은 특징을 갖는다.
+SELECT * FROM buy CROSS JOIN member;
+
+24. ( 상호 조인 )은 다음과 같은 특징을 갖는다.
 
 * ON 구문을 사용할 수 없다.
 * 결과의 내용은 의미가 없다. 랜덤으로 조인하기 때문이다.
@@ -136,13 +168,21 @@ WHERE buy.mem_id = 'GRL';
 
 25. sakila.inventory 테이블과 world.city테이블을 상호 조인한후 행의 개수를 출력하시오.
 
+SELECT COUNT(*) "데이터 개수" FROM sakila.inventory CROSS JOIN world.city;
+
 26. sakila.actor테이블과 world.country를 상호 조인한 cross_table을 만드시오.
+
+CREATE TABLE cross_table
+SELECT * FROM sakila.actor CROSS JOIN world.county;
 
 27. cross_table의 5건의  모든 열의 데이터를 출력하시오.
 
-28. 내부 조인, 외부 조인, 상호 조인은 모두 2개의 테이블을 조인했다. (         )은 자신이
-자신과 조인한다는 의미이다. 그래서 (         )은 1개의 테이블을 사용한다. 또 별도의 문법이 있는
-것은 아니고 1개로 조인하면 (         )이 되는 것이다.
+SELECT * FROM cross_table LIMIT 5;
+
+28. 내부 조인, 외부 조인, 상호 조인은 모두 2개의 테이블을 조인했다. 
+( 자체 조인(Self join) )은 자신이 자신과 조인한다는 의미이다. 
+그래서 ( 자체 조인 )은 1개의 테이블을 사용한다. 또 별도의 문법이 있는
+것은 아니고 1개로 조인하면 ( 자체 조인 )이 되는 것이다.
 
 USE market_db;
 CREATE TABLE emp_table(emp CHAR(4), manager CHAR(4), phone VARCHAR(8));
@@ -156,4 +196,13 @@ INSERT INTO emp_table VALUES('인사부장', '관리이사', '2222-2');
 INSERT INTO emp_table VALUES('개발팀장', '정보이사', '3333-1');
 INSERT INTO emp_table VALUES('개발주임', '정보이사', '3333-1-1');
 
-29. 직원 테이블(emp_table)로 부터 경리부장인 직원의 직원(emp), 직속상관(emp), 직속상관연락처(phone)을 출력하시오.
+29. 직원 테이블(emp_table)로 부터 
+경리부장인 직원의 직원(emp), 직속상관(emp), 직속상관연락처(phone)을 출력하시오.
+
+SELECT A.emp "직원", B.emp "직속상관", B.phone "직속상관연락처"
+FROM emp_table A
+INER JOIN emp_table B
+ON A.manager = B.emp
+WHERE A.emp = '경리부장';
+
+

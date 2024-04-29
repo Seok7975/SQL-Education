@@ -270,25 +270,34 @@ USE market_db;
 SELECT * FROM buy 
 INNER JOIN member ON buy.mem_id = member.mem_id WHERE buy.MEM_ID = 'GRL';
 
-구매(buy) 테이블과 회원(member)테이블로 부터 구매 테이블의 회원 아이디(mem_id)와 회원 테이블(mem_id)과 같은 것의
-회원 아이디(mem_id), 회원 이름(mem_name), 제품 이름(prod_name), 주소(addr), 전화번호(별칭 '연락처')를 출력하시오.
+구매(buy) 테이블과 회원(member)테이블로 부터 
+구매 테이블의 회원 아이디(mem_id)와 회원 테이블(mem_id)과 같은 것의
+회원 아이디(mem_id), 회원 이름(mem_name), 제품 이름(prod_name), 
+주소(addr), 전화번호(별칭 '연락처')를 출력하시오.
 
-SELECT buy.mem_id, member.mem_name, buy.prod_name, member.addr, CONCAT(member.phone1, member.phone2) '연락처' FROM buy INNER JOIN member
+SELECT buy.mem_id, member.mem_name, 
+buy.prod_name, member.addr, 
+CONCAT(member.phone1, member.phone2) '연락처' FROM buy INNER JOIN member
 ON buy.mem_id = member.mem_id;
 
-SELECT B.mem_id, M.mem_name, B.prod_name, M.addr, CONCAT(M.phone1, M.phone2) '연락처' FROM buy B INNER JOIN member M
+SELECT B.mem_id, M.mem_name, B.prod_name, M.addr, 
+CONCAT(M.phone1, M.phone2) '연락처' FROM buy B INNER JOIN member M
 ON B.mem_id = M.mem_id;
 
 "우리 사이트에서 한 번이라도 구매한 기록이 있는 회원들에게 감사의 안내문을 발송합시다."
 위와 같은 상황에 대응하기 위해서
 
-구매 테이블(buy)과 회원 테이블(member)에서 구매 테이블의 회원 아이디(mem_id)와 회원 테이블의 회원 아이디(mem_id)과 같은 것들의
-회원 아이디(mem_id), 회원 이름(mem_name), 회원 주소(addr)을 회원 아이디 오름 차순으로 출력하시오.
+구매 테이블(buy)과 회원 테이블(member)에서 
+구매 테이블의 회원 아이디(mem_id)와 회원 테이블의 회원 아이디(mem_id)과 같은 것들의
+회원 아이디(mem_id), 회원 이름(mem_name), 회원 주소(addr)을 
+회원 아이디 오름 차순으로 출력하시오.
 
-SELECT DISTINCT M.mem_id, M.mem_name, M.addr FROM buy B INNER JOIN member M ON B.mem_id = M.mem_id ORDER BY M.mem_id;
+SELECT DISTINCT M.mem_id, M.mem_name, M.addr 
+FROM buy B INNER JOIN member M ON B.mem_id = M.mem_id ORDER BY M.mem_id;
 
 외부(OUTER JOIN) 조인
-내부 조인은 두 테이블에 모두 데이터가 있어야만 결과가 나온다. 이와 달리 외부 조인은 한쪽에만 데이터가 있어도 결과가 나온다.
+내부 조인은 두 테이블에 모두 데이터가 있어야만 결과가 나온다. 
+이와 달리 외부 조인은 한쪽에만 데이터가 있어도 결과가 나온다.
 
 외부 조인의 기본
 
@@ -300,10 +309,16 @@ FROM <첫 번째 테이블(LEFT 테이블)>
 
 '전체 회원의 구매 기록(구매 기록이 없는 회원의 정보도 함께) 출력'
 
-회원 테이블(member)과  구매 테이블(buy)로 부터 회원 테이블의 아이디(mem_id)와  구매 테이블의 아이디(mem_id)과 같은 것들의
-전체 회원의 구매 기록(구매 기록이 없는 회원의 정보도 함께) 출력하는데, 회원 아이디(mem_id), 회원 이름(mem_name), 제품 이름(prod_name), 주소(addr)를 출력하자.
+회원 테이블(member)과 
+구매 테이블(buy)로 부터 회원 테이블의 아이디(mem_id)와 
+구매 테이블의 아이디(mem_id)과 같은 것들의
+전체 회원의 구매 기록(구매 기록이 없는 회원의 정보도 함께) 출력하는데, 
+회원 아이디(mem_id), 회원 이름(mem_name), 제품 이름(prod_name), 주소(addr)를
+회원 아이디(mem_id) 오름차순으로 출력하자.
 
-SELECT M.mem_id, M.mem_name, B.prod_name, M.addr FROM member M LEFT OUTER JOIN buy B ON M.mem_id = B.mem_id ORDER BY M.mem_id;
+SELECT M.mem_id, M.mem_name, B.prod_name, M.addr 
+FROM member M LEFT OUTER JOIN buy B ON M.mem_id = B.mem_id 
+ORDER BY M.mem_id;
 
 참고. LEFT OUTER JOIN을 줄여서 LEFT JOIN이라고만 써도 된다.
 
