@@ -1,0 +1,3 @@
+sendRedirect.jsp를 만들고 request 객체에 속성이름을 'name'으로 주고 값을 '홍길동'으로 준다. 그리고 responese.sendRedirect로 result.jsp로 이동하여 name의 값을 출력한다.
+
+requestDispatcher.jsp 파일을 만들고 request 객체에 속성이름을 'name'으로 주고 값을 '홍길동'으로 준다. 그리고 RequestDispatcher를 통해 result.jsp로 이동하여 name의 값을 출력한다.
